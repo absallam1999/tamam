@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <defs>
+    <!-- Premium Dark Background Gradient (iOS Style) -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A1528" />
+      <stop offset="50%" stop-color="#0D0A14" />
+      <stop offset="100%" stop-color="#000000" />
+    </linearGradient>
+
+    <!-- Primary Purple Gradient (Left Arm & Stem of 'T') -->
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#C084FC" />
+      <stop offset="100%" stop-color="#7E22CE" />
+    </linearGradient>
+
+    <!-- Accent Pink/Rose Gradient (The Checkmark) -->
+    <linearGradient id="accentGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F43F5E" />
+      <stop offset="100%" stop-color="#F97316" />
+    </linearGradient>
+
+    <!-- Ambient Glow Filter -->
+    <filter id="glowBlur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12" />
+    </filter>
+
+    <!-- Drop Shadow for the 3D Ribbon Overlap -->
+    <filter id="ribbonShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="-4" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <!-- ========================================== -->
+  <!-- 1. FAVICON BACKGROUND -->
+  <!-- ========================================== -->
+  <g id="favicon-base">
+    <!-- Main Dark Squircle -->
+    <rect width="160" height="160" rx="40" fill="url(#bgGrad)" />
+    <!-- Glassmorphism Inner Border Reflection (Thickened to 4px for tiny visibility) -->
+    <rect width="156" height="156" x="2" y="2" rx="38" fill="none" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="4" />
+  </g>
+
+  <!-- ========================================== -->
+  <!-- 2. SCALED TAMAM MARK FOR MICRO-VISIBILITY -->
+  <!-- ========================================== -->
+  <g id="tamam-mark">
+    <!-- Ambient Background Glow (Opacity slightly increased for smaller sizes) -->
+    <g filter="url(#glowBlur)" opacity="0.6">
+      <path d="M 32 44 L 80 44 L 80 116 L 128 44" fill="none" stroke="#A855F7" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+
+    <!-- Back Ribbon: The 'T' Left Crossbar and Vertical Stem -->
+    <path 
+      d="M 32 44 L 80 44 L 80 116" 
+      fill="none" 
+      stroke="url(#primaryGradient)" 
+      stroke-width="30" 
+      stroke-linecap="round" 
+      stroke-linejoin="round" 
+    />
+
+    <!-- Front Ribbon: The Checkmark Swoosh -->
+    <path 
+      d="M 80 116 L 128 44" 
+      fill="none" 
+      stroke="url(#accentGradient)" 
+      stroke-width="30" 
+      stroke-linecap="round" 
+      filter="url(#ribbonShadow)" 
+    />
+  </g>
+</svg>

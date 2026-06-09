@@ -1,0 +1,183 @@
+/* ========================================
+   Light Mode Variables
+   ======================================== */
+:root {
+  /* ----- Background Colors ----- */
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --bg-tertiary: #f4f4f5;
+  --bg-quaternary: #e4e4e7;
+  --bg-elevated: #ffffff;
+  --bg-card: #ffffff;
+  --bg-navbar: rgba(255, 255, 255, 0.8);
+  
+  /* ----- Text Colors ----- */
+  --text-primary: #18181b;
+  --text-secondary: #3f3f46;
+  --text-tertiary: #71717a;
+  --text-disabled: #a1a1aa;
+  --text-accent: #a855f7;
+  
+  /* ----- Border Colors ----- */
+  --border-light: #e4e4e7;
+  --border-default: #d4d4d8;
+  --border-dark: #a1a1aa;
+  
+  /* ----- Glassmorphism Colors ----- */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-bg-md: rgba(255, 255, 255, 0.52);
+  --glass-bg-sm: rgba(255, 255, 255, 0.32);
+  --glass-bg-xs: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.42);
+  --glass-border-hover: rgba(255, 255, 255, 0.62);
+  --glass-border-active: rgba(255, 255, 255, 0.82);
+  --glass-shadow: rgba(31, 38, 135, 0.07);
+  --glass-shadow-lg: rgba(31, 38, 135, 0.1);
+  --glass-shadow-xl: rgba(31, 38, 135, 0.15);
+  
+  /* ----- iOS System Colors ----- */
+  --ios-blue: #007AFF;
+  --ios-blue-light: #5E9BFF;
+  --ios-blue-dark: #0055D4;
+  --ios-green: #34C759;
+  --ios-green-light: #6EDD8B;
+  --ios-green-dark: #248A3D;
+  --ios-indigo: #5856D6;
+  --ios-indigo-light: #7E7AE8;
+  --ios-indigo-dark: #3B3AA6;
+  --ios-orange: #FF9500;
+  --ios-orange-light: #FFB340;
+  --ios-orange-dark: #CC7700;
+  --ios-pink: #FF2D55;
+  --ios-pink-light: #FF6B8A;
+  --ios-pink-dark: #CC1A3E;
+  --ios-purple: #AF52DE;
+  --ios-purple-light: #C57EED;
+  --ios-purple-dark: #8A3AB8;
+  --ios-red: #FF3B30;
+  --ios-red-light: #FF6B63;
+  --ios-red-dark: #CC2E24;
+  --ios-teal: #5AC8FA;
+  --ios-teal-light: #8DDBFC;
+  --ios-teal-dark: #2C9FD8;
+  --ios-yellow: #FFCC00;
+  --ios-yellow-light: #FFE066;
+  --ios-yellow-dark: #CCA300;
+  
+  /* ----- Gradient Colors ----- */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  
+  /* ----- Accent Colors ----- */
+  --accent-50: #faf5ff;
+  --accent-100: #f3e8ff;
+  --accent-200: #e9d5ff;
+  --accent-300: #d8b4fe;
+  --accent-400: #c084fc;
+  --accent-500: #a855f7;
+  --accent-600: #9333ea;
+  --accent-700: #7e22ce;
+  --accent-800: #6b21a5;
+  --accent-900: #581c87;
+  --accent-950: #3b0764;
+  
+  /* ----- Neutral Colors ----- */
+  --neutral-0: #ffffff;
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+  --neutral-1000: #000000;
+  
+  /* ----- Semantic Colors ----- */
+  --semantic-success: #10b981;
+  --semantic-warning: #f59e0b;
+  --semantic-error: #ef4444;
+  --semantic-info: #3b82f6;
+  
+  /* ----- Overlay Colors ----- */
+  --overlay-light: rgba(0, 0, 0, 0.2);
+  --overlay-dark: rgba(0, 0, 0, 0.6);
+  --overlay-blur: rgba(0, 0, 0, 0.4);
+  --overlay-heavy: rgba(0, 0, 0, 0.8);
+  
+  /* ----- Shadow Colors ----- */
+  --shadow-sm: rgba(0, 0, 0, 0.05);
+  --shadow-default: rgba(0, 0, 0, 0.08);
+  --shadow-md: rgba(0, 0, 0, 0.1);
+  --shadow-lg: rgba(0, 0, 0, 0.12);
+  --shadow-xl: rgba(0, 0, 0, 0.15);
+  
+  /* ----- Border Radius ----- */
+  --radius-sm: 4px;
+  --radius-default: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+  
+  /* ----- Transitions ----- */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 500ms ease;
+}
+
+/* ========================================
+   Dark Mode Variables
+   ======================================== */
+.dark {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #141414;
+  --bg-tertiary: #1f1f1f;
+  --bg-quaternary: #2a2a2a;
+  --bg-elevated: #242424;
+  --bg-card: #1c1c1e;
+  --bg-navbar: rgba(0, 0, 0, 0.8);
+  
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  --text-disabled: #52525b;
+  --text-accent: #a855f7;
+  
+  --border-light: #27272a;
+  --border-default: #3f3f46;
+  --border-dark: #52525b;
+  
+  --glass-bg: rgba(0, 0, 0, 0.82);
+  --glass-bg-md: rgba(0, 0, 0, 0.52);
+  --glass-bg-sm: rgba(0, 0, 0, 0.32);
+  --glass-bg-xs: rgba(0, 0, 0, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(255, 255, 255, 0.15);
+  --glass-border-active: rgba(255, 255, 255, 0.22);
+  --glass-shadow: rgba(0, 0, 0, 0.3);
+  --glass-shadow-lg: rgba(0, 0, 0, 0.4);
+  --glass-shadow-xl: rgba(0, 0, 0, 0.5);
+  
+  --shadow-sm: rgba(0, 0, 0, 0.2);
+  --shadow-default: rgba(0, 0, 0, 0.25);
+  --shadow-md: rgba(0, 0, 0, 0.3);
+  --shadow-lg: rgba(0, 0, 0, 0.35);
+  --shadow-xl: rgba(0, 0, 0, 0.4);
+}
+
+/* ========================================
+   Selection Styles
+   ======================================== */
+::selection {
+  background-color: var(--accent-500);
+  color: white;
+}
+
+::-moz-selection {
+  background-color: var(--accent-500);
+  color: white;
+}

@@ -1,0 +1,46 @@
+/* Main CSS Entry Point */
+
+/* Normalize & Reset */
+@import "./normalize.css";
+
+/* CSS Variables (Light/Dark Mode) */
+@import "./variables.css";
+
+/* Custom Animations */
+@import "./animations.css";
+
+/* Typography & Fonts */
+@import "./typography.css";
+
+/* Glassmorphism Components */
+@import "./components.css";
+
+/* Custom Utilities & RTL Support */
+@import "./utilities.css";
+
+/* Tailwind CSS v4 */
+@import "tailwindcss";
+
+/* global overrides */
+body {
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Print Styles */
+@media print {
+  .glass-nav,
+  .footer {
+    display: none;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+}

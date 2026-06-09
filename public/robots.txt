@@ -1,0 +1,15 @@
+# Robots.txt for Tamam App
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://tamamapp.com/sitemap.xml
+
+# Crawl delay for bots
+Crawl-delay: 1
+
+# Host
+Host: https://tamamapp.com

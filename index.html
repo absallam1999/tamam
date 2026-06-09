@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="theme-color"
+      content="#ffffff"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#0a0a0a"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Tamam" />
+
+    <title>Tamam - تمام | Fast & Reliable Delivery</title>
+    <meta
+      name="description"
+      content="Tamam App - Your ultimate delivery solution. Fast, secure, and reliable delivery for food, groceries, and packages."
+    />
+    <meta
+      name="keywords"
+      content="delivery app, food delivery, grocery delivery, Tamam app, fast delivery"
+    />
+    <meta name="author" content="Tamam App" />
+    <meta name="robots" content="index, follow" />
+
+    <meta property="og:title" content="Tamam - تمام" />
+    <meta
+      property="og:description"
+      content="Experience lightning-fast delivery with Tamam App."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/social/og-image.jpg" />
+    <meta property="og:url" content="https://tamamapp.com" />
+    <meta property="og:site_name" content="Tamam App" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ar_SA" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@tamamapp" />
+    <meta name="twitter:title" content="Tamam - تمام" />
+    <meta
+      name="twitter:description"
+      content="Experience lightning-fast delivery with Tamam App."
+    />
+    <meta name="twitter:image" content="/social/twitter-image.jpg" />
+
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/svg/favicon.svg" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon/favicon-16x16.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/apple-touch-icons/apple-touch-icon-180x180.png"
+    />
+    <link rel="mask-icon" href="/svg/safari-pinned-tab.svg" color="#a855f7" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      (function () {
+        try {
+          const savedTheme = localStorage.getItem("theme");
+          const systemDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          const isDark = savedTheme === "dark" || (!savedTheme && systemDark);
+          if (isDark) {
+            document.documentElement.classList.add("dark");
+          }
+        } catch (e) {}
+        try {
+          const savedLang = localStorage.getItem("i18nextLng");
+          if (savedLang === "ar") {
+            document.documentElement.setAttribute("dir", "rtl");
+            document.documentElement.setAttribute("lang", "ar");
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #ffffff;
+        transition: background 0.3s ease;
+      }
+
+      .dark body,
+      body.dark {
+        background: #0a0a0a;
+      }
+
+      body.loading {
+        overflow: hidden;
+      }
+
+      body.loading #root {
+        opacity: 0;
+      }
+
+      body.loaded #root {
+        opacity: 1;
+        transition: opacity 0.3s ease;
+      }
+
+      .loading-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: #ffffff;
+        transition:
+          opacity 0.4s ease,
+          visibility 0.4s ease;
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .dark .loading-screen {
+        background: #0a0a0a;
+      }
+
+      body.loaded .loading-screen {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .loading-logo {
+        width: 80px;
+        height: 80px;
+        animation: logoFloat 2s ease-in-out infinite;
+      }
+
+      .loading-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .loading-text {
+        margin-top: 24px;
+        font-size: 18px;
+        font-weight: 700;
+        color: #18181b;
+        letter-spacing: -0.02em;
+      }
+
+      .dark .loading-text {
+        color: #ffffff;
+      }
+
+      .loading-bar {
+        width: 120px;
+        height: 3px;
+        margin-top: 20px;
+        border-radius: 3px;
+        background: #e4e4e7;
+        overflow: hidden;
+      }
+
+      .dark .loading-bar {
+        background: #27272a;
+      }
+
+      .loading-bar-fill {
+        height: 100%;
+        width: 0;
+        border-radius: 3px;
+        background: #a855f7;
+        animation: barFill 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      @keyframes logoFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+      }
+
+      @keyframes barFill {
+        0% {
+          width: 0;
+        }
+        60% {
+          width: 80%;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .loading-logo {
+          width: 64px;
+          height: 64px;
+        }
+        .loading-text {
+          font-size: 16px;
+        }
+        .loading-bar {
+          width: 100px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .loading-logo {
+          animation: none;
+        }
+        .loading-bar-fill {
+          animation: none;
+          width: 100%;
+        }
+      }
+
+      @media print {
+        .loading-screen {
+          display: none;
+        }
+        body {
+          background: #fff;
+        }
+      }
+    </style>
+  </head>
+  <body class="antialiased">
+    <div class="loading-screen">
+      <div class="loading-logo">
+        <img src="/svg/favicon.svg" alt="Tamam logo" />
+      </div>
+      <div class="loading-bar">
+        <div class="loading-bar-fill"></div>
+      </div>
+    </div>
+
+    <div id="root"></div>
+
+    <script>
+      (function () {
+        if (document.body) document.body.classList.add("loading");
+        window.addEventListener("load", function () {
+          setTimeout(function () {
+            if (document.body) {
+              document.body.classList.remove("loading");
+              document.body.classList.add("loaded");
+            }
+          }, 600);
+        });
+      })();
+    </script>
+
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
