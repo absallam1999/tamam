@@ -16,7 +16,7 @@
   --text-secondary: #3f3f46;
   --text-tertiary: #71717a;
   --text-disabled: #a1a1aa;
-  --text-accent: #a855f7;
+  --text-accent: #22c55e;
   
   /* ----- Border Colors ----- */
   --border-light: #e4e4e7;
@@ -39,9 +39,9 @@
   --ios-blue: #007AFF;
   --ios-blue-light: #5E9BFF;
   --ios-blue-dark: #0055D4;
-  --ios-green: #34C759;
-  --ios-green-light: #6EDD8B;
-  --ios-green-dark: #248A3D;
+  --ios-green: #22c55e;
+  --ios-green-light: #4ade80;
+  --ios-green-dark: #15803d;
   --ios-indigo: #5856D6;
   --ios-indigo-light: #7E7AE8;
   --ios-indigo-dark: #3B3AA6;
@@ -65,20 +65,28 @@
   --ios-yellow-dark: #CCA300;
   
   /* ----- Gradient Colors ----- */
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-primary: linear-gradient(135deg, #22c55e 0%, #15803d 50%, #064e3b 100%);
+  --gradient-primary-light: linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #15803d 100%);
+  --gradient-primary-dark: linear-gradient(135deg, #15803d 0%, #064e3b 50%, #022c22 100%);
+  --gradient-primary-subtle: linear-gradient(135deg, #86efac 0%, #4ade80 50%, #22c55e 100%);
+  
+  /* ----- Foody Green Gradients (Icon-specific) ----- */
+  --gradient-foody: linear-gradient(135deg, #22c55e 0%, #15803d 50%, #064e3b 100%);
+  --gradient-foody-light: linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #15803d 100%);
+  --gradient-foody-vibrant: linear-gradient(135deg, #34d399 0%, #22c55e 30%, #15803d 70%, #064e3b 100%);
   
   /* ----- Accent Colors ----- */
-  --accent-50: #faf5ff;
-  --accent-100: #f3e8ff;
-  --accent-200: #e9d5ff;
-  --accent-300: #d8b4fe;
-  --accent-400: #c084fc;
-  --accent-500: #a855f7;
-  --accent-600: #9333ea;
-  --accent-700: #7e22ce;
-  --accent-800: #6b21a5;
-  --accent-900: #581c87;
-  --accent-950: #3b0764;
+  --accent-50: #f0fdf4;
+  --accent-100: #dcfce7;
+  --accent-200: #bbf7d0;
+  --accent-300: #86efac;
+  --accent-400: #4ade80;
+  --accent-500: #22c55e;
+  --accent-600: #16a34a;
+  --accent-700: #15803d;
+  --accent-800: #166534;
+  --accent-900: #14532d;
+  --accent-950: #052e16;
   
   /* ----- Neutral Colors ----- */
   --neutral-0: #ffffff;
@@ -95,7 +103,7 @@
   --neutral-1000: #000000;
   
   /* ----- Semantic Colors ----- */
-  --semantic-success: #10b981;
+  --semantic-success: #22c55e;
   --semantic-warning: #f59e0b;
   --semantic-error: #ef4444;
   --semantic-info: #3b82f6;
@@ -107,11 +115,12 @@
   --overlay-heavy: rgba(0, 0, 0, 0.8);
   
   /* ----- Shadow Colors ----- */
-  --shadow-sm: rgba(0, 0, 0, 0.05);
-  --shadow-default: rgba(0, 0, 0, 0.08);
-  --shadow-md: rgba(0, 0, 0, 0.1);
-  --shadow-lg: rgba(0, 0, 0, 0.12);
-  --shadow-xl: rgba(0, 0, 0, 0.15);
+  --shadow-sm: rgba(2, 44, 34, 0.05);
+  --shadow-default: rgba(2, 44, 34, 0.08);
+  --shadow-md: rgba(2, 44, 34, 0.1);
+  --shadow-lg: rgba(2, 44, 34, 0.12);
+  --shadow-xl: rgba(2, 44, 34, 0.15);
+  --shadow-foody: rgba(2, 44, 34, 0.25);
   
   /* ----- Border Radius ----- */
   --radius-sm: 4px;
@@ -145,7 +154,7 @@
   --text-secondary: #a1a1aa;
   --text-tertiary: #71717a;
   --text-disabled: #52525b;
-  --text-accent: #a855f7;
+  --text-accent: #4ade80;
   
   --border-light: #27272a;
   --border-default: #3f3f46;
@@ -162,11 +171,23 @@
   --glass-shadow-lg: rgba(0, 0, 0, 0.4);
   --glass-shadow-xl: rgba(0, 0, 0, 0.5);
   
+  /* ----- Dark Mode Gradients ----- */
+  --gradient-primary: linear-gradient(135deg, #22c55e 0%, #15803d 50%, #064e3b 100%);
+  --gradient-primary-light: linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #15803d 100%);
+  --gradient-primary-dark: linear-gradient(135deg, #16a34a 0%, #064e3b 50%, #022c22 100%);
+  --gradient-primary-subtle: linear-gradient(135deg, #86efac 0%, #4ade80 50%, #22c55e 100%);
+  
+  /* ----- Foody Green Gradients (Icon-specific) ----- */
+  --gradient-foody: linear-gradient(135deg, #22c55e 0%, #15803d 50%, #064e3b 100%);
+  --gradient-foody-light: linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #15803d 100%);
+  --gradient-foody-vibrant: linear-gradient(135deg, #34d399 0%, #22c55e 30%, #15803d 70%, #064e3b 100%);
+  
   --shadow-sm: rgba(0, 0, 0, 0.2);
   --shadow-default: rgba(0, 0, 0, 0.25);
   --shadow-md: rgba(0, 0, 0, 0.3);
   --shadow-lg: rgba(0, 0, 0, 0.35);
   --shadow-xl: rgba(0, 0, 0, 0.4);
+  --shadow-foody: rgba(2, 44, 34, 0.4);
 }
 
 /* ========================================
