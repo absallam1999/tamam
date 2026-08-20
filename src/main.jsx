@@ -6,6 +6,7 @@ import './utils/i18n'
 import App from './App'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { LangProvider } from './contexts/LangContext'
+import { QueryProvider } from './providers/QueryProvider'
 
 const rootElement = document.getElementById('root')
 
@@ -16,11 +17,13 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <BrowserRouter>
-      <ThemeProvider>
-        <LangProvider>
-          <App />
-        </LangProvider>
-      </ThemeProvider>
+      <QueryProvider>
+        <ThemeProvider>
+          <LangProvider>
+            <App />
+          </LangProvider>
+        </ThemeProvider>
+      </QueryProvider>
     </BrowserRouter>
   </StrictMode>
 )

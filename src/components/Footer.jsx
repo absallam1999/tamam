@@ -18,6 +18,7 @@ const Footer = () => {
     {
       label: "Facebook",
       href: "#",
+      color: "#22c55e",
       icon: (
         <svg
           width="15"
@@ -33,6 +34,7 @@ const Footer = () => {
     {
       label: "Twitter",
       href: "#",
+      color: "#22c55e",
       icon: (
         <svg
           width="15"
@@ -48,6 +50,7 @@ const Footer = () => {
     {
       label: "Instagram",
       href: "#",
+      color: "#22c55e",
       icon: (
         <svg
           width="15"
@@ -63,6 +66,7 @@ const Footer = () => {
     {
       label: "LinkedIn",
       href: "#",
+      color: "#22c55e",
       icon: (
         <svg
           width="15"
@@ -181,6 +185,18 @@ const Footer = () => {
                         textDecoration: "none",
                         padding: "4px 10px",
                         borderRadius: "8px",
+                        transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = "var(--accent-500)";
+                        e.currentTarget.style.backgroundColor =
+                          "var(--accent-50)";
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = "var(--text-secondary)";
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.transform = "translateY(0)";
                       }}
                     >
                       {link.label}
@@ -202,7 +218,7 @@ const Footer = () => {
 
               {/* Social Icons */}
               <div
-                style={{ display: "flex", alignItems: "center", gap: "1px" }}
+                style={{ display: "flex", alignItems: "center", gap: "2px" }}
               >
                 {socialLinks.map((social) => (
                   <a
@@ -218,6 +234,23 @@ const Footer = () => {
                       justifyContent: "center",
                       color: "var(--text-tertiary)",
                       textDecoration: "none",
+                      transition: "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+                      position: "relative",
+                      overflow: "hidden",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = "#ffffff";
+                      e.currentTarget.style.backgroundColor = social.color;
+                      e.currentTarget.style.transform =
+                        "translateY(-3px) scale(1.08)";
+                      e.currentTarget.style.boxShadow = `0 6px 16px ${social.color}40`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = "var(--text-tertiary)";
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.transform =
+                        "translateY(0) scale(1)";
+                      e.currentTarget.style.boxShadow = "none";
                     }}
                   >
                     {social.icon}

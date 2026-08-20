@@ -1,8 +1,8 @@
 # Security policy for Tamam App
-Contact: mailto:security@tamamapp.com
-Contact: https://tamamapp.com/security
-Encryption: https://tamamapp.com/pgp-key.asc
+Contact: mailto:security@tamaam.cloud
+Contact: https://tamaam.cloud/security
+Encryption: https://tamaam.cloud/pgp-key.asc
 Preferred-Languages: en, ar
-Canonical: https://tamamapp.com/security.txt
-Policy: https://tamamapp.com/security-policy
-Hiring: https://tamamapp.com/careers
+Canonical: https://tamaam.cloud/security.txt
+Policy: https://tamaam.cloud/security-policy
+Hiring: https://tamaam.cloud/careers

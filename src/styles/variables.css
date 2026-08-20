@@ -10,19 +10,19 @@
   --bg-elevated: #ffffff;
   --bg-card: #ffffff;
   --bg-navbar: rgba(255, 255, 255, 0.8);
-  
+
   /* ----- Text Colors ----- */
   --text-primary: #18181b;
   --text-secondary: #3f3f46;
   --text-tertiary: #71717a;
   --text-disabled: #a1a1aa;
   --text-accent: #22c55e;
-  
+
   /* ----- Border Colors ----- */
   --border-light: #e4e4e7;
   --border-default: #d4d4d8;
   --border-dark: #a1a1aa;
-  
+
   /* ----- Glassmorphism Colors ----- */
   --glass-bg: rgba(255, 255, 255, 0.72);
   --glass-bg-md: rgba(255, 255, 255, 0.52);
@@ -34,47 +34,83 @@
   --glass-shadow: rgba(31, 38, 135, 0.07);
   --glass-shadow-lg: rgba(31, 38, 135, 0.1);
   --glass-shadow-xl: rgba(31, 38, 135, 0.15);
-  
+
   /* ----- iOS System Colors ----- */
-  --ios-blue: #007AFF;
-  --ios-blue-light: #5E9BFF;
-  --ios-blue-dark: #0055D4;
+  --ios-blue: #007aff;
+  --ios-blue-light: #5e9bff;
+  --ios-blue-dark: #0055d4;
   --ios-green: #22c55e;
   --ios-green-light: #4ade80;
   --ios-green-dark: #15803d;
-  --ios-indigo: #5856D6;
-  --ios-indigo-light: #7E7AE8;
-  --ios-indigo-dark: #3B3AA6;
-  --ios-orange: #FF9500;
-  --ios-orange-light: #FFB340;
-  --ios-orange-dark: #CC7700;
-  --ios-pink: #FF2D55;
-  --ios-pink-light: #FF6B8A;
-  --ios-pink-dark: #CC1A3E;
-  --ios-purple: #AF52DE;
-  --ios-purple-light: #C57EED;
-  --ios-purple-dark: #8A3AB8;
-  --ios-red: #FF3B30;
-  --ios-red-light: #FF6B63;
-  --ios-red-dark: #CC2E24;
-  --ios-teal: #5AC8FA;
-  --ios-teal-light: #8DDBFC;
-  --ios-teal-dark: #2C9FD8;
-  --ios-yellow: #FFCC00;
-  --ios-yellow-light: #FFE066;
-  --ios-yellow-dark: #CCA300;
-  
+  --ios-indigo: #5856d6;
+  --ios-indigo-light: #7e7ae8;
+  --ios-indigo-dark: #3b3aa6;
+  --ios-orange: #ff9500;
+  --ios-orange-light: #ffb340;
+  --ios-orange-dark: #cc7700;
+  --ios-pink: #ff2d55;
+  --ios-pink-light: #ff6b8a;
+  --ios-pink-dark: #cc1a3e;
+  --ios-purple: #af52de;
+  --ios-purple-light: #c57eed;
+  --ios-purple-dark: #8a3ab8;
+  --ios-red: #ff3b30;
+  --ios-red-light: #ff6b63;
+  --ios-red-dark: #cc2e24;
+  --ios-teal: #5ac8fa;
+  --ios-teal-light: #8ddbfc;
+  --ios-teal-dark: #2c9fd8;
+  --ios-yellow: #ffcc00;
+  --ios-yellow-light: #ffe066;
+  --ios-yellow-dark: #cca300;
+
   /* ----- Gradient Colors ----- */
-  --gradient-primary: linear-gradient(135deg, #22c55e 0%, #15803d 50%, #064e3b 100%);
-  --gradient-primary-light: linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #15803d 100%);
-  --gradient-primary-dark: linear-gradient(135deg, #15803d 0%, #064e3b 50%, #022c22 100%);
-  --gradient-primary-subtle: linear-gradient(135deg, #86efac 0%, #4ade80 50%, #22c55e 100%);
-  
+  --gradient-primary: linear-gradient(
+    135deg,
+    #22c55e 0%,
+    #15803d 50%,
+    #064e3b 100%
+  );
+  --gradient-primary-light: linear-gradient(
+    135deg,
+    #4ade80 0%,
+    #22c55e 50%,
+    #15803d 100%
+  );
+  --gradient-primary-dark: linear-gradient(
+    135deg,
+    #15803d 0%,
+    #064e3b 50%,
+    #022c22 100%
+  );
+  --gradient-primary-subtle: linear-gradient(
+    135deg,
+    #86efac 0%,
+    #4ade80 50%,
+    #22c55e 100%
+  );
+
   /* ----- Foody Green Gradients (Icon-specific) ----- */
-  --gradient-foody: linear-gradient(135deg, #22c55e 0%, #15803d 50%, #064e3b 100%);
-  --gradient-foody-light: linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #15803d 100%);
-  --gradient-foody-vibrant: linear-gradient(135deg, #34d399 0%, #22c55e 30%, #15803d 70%, #064e3b 100%);
-  
+  --gradient-foody: linear-gradient(
+    135deg,
+    #22c55e 0%,
+    #15803d 50%,
+    #064e3b 100%
+  );
+  --gradient-foody-light: linear-gradient(
+    135deg,
+    #4ade80 0%,
+    #22c55e 50%,
+    #15803d 100%
+  );
+  --gradient-foody-vibrant: linear-gradient(
+    135deg,
+    #34d399 0%,
+    #22c55e 30%,
+    #15803d 70%,
+    #064e3b 100%
+  );
+
   /* ----- Accent Colors ----- */
   --accent-50: #f0fdf4;
   --accent-100: #dcfce7;
@@ -87,7 +123,7 @@
   --accent-800: #166534;
   --accent-900: #14532d;
   --accent-950: #052e16;
-  
+
   /* ----- Neutral Colors ----- */
   --neutral-0: #ffffff;
   --neutral-50: #fafafa;
@@ -101,19 +137,19 @@
   --neutral-800: #262626;
   --neutral-900: #171717;
   --neutral-1000: #000000;
-  
+
   /* ----- Semantic Colors ----- */
   --semantic-success: #22c55e;
   --semantic-warning: #f59e0b;
   --semantic-error: #ef4444;
   --semantic-info: #3b82f6;
-  
+
   /* ----- Overlay Colors ----- */
   --overlay-light: rgba(0, 0, 0, 0.2);
   --overlay-dark: rgba(0, 0, 0, 0.6);
   --overlay-blur: rgba(0, 0, 0, 0.4);
   --overlay-heavy: rgba(0, 0, 0, 0.8);
-  
+
   /* ----- Shadow Colors ----- */
   --shadow-sm: rgba(2, 44, 34, 0.05);
   --shadow-default: rgba(2, 44, 34, 0.08);
@@ -121,7 +157,7 @@
   --shadow-lg: rgba(2, 44, 34, 0.12);
   --shadow-xl: rgba(2, 44, 34, 0.15);
   --shadow-foody: rgba(2, 44, 34, 0.25);
-  
+
   /* ----- Border Radius ----- */
   --radius-sm: 4px;
   --radius-default: 8px;
@@ -131,7 +167,7 @@
   --radius-2xl: 20px;
   --radius-3xl: 24px;
   --radius-full: 9999px;
-  
+
   /* ----- Transitions ----- */
   --transition-fast: 150ms ease;
   --transition-normal: 300ms ease;
@@ -149,17 +185,17 @@
   --bg-elevated: #242424;
   --bg-card: #1c1c1e;
   --bg-navbar: rgba(0, 0, 0, 0.8);
-  
+
   --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
   --text-tertiary: #71717a;
   --text-disabled: #52525b;
   --text-accent: #4ade80;
-  
+
   --border-light: #27272a;
   --border-default: #3f3f46;
   --border-dark: #52525b;
-  
+
   --glass-bg: rgba(0, 0, 0, 0.82);
   --glass-bg-md: rgba(0, 0, 0, 0.52);
   --glass-bg-sm: rgba(0, 0, 0, 0.32);
@@ -170,18 +206,54 @@
   --glass-shadow: rgba(0, 0, 0, 0.3);
   --glass-shadow-lg: rgba(0, 0, 0, 0.4);
   --glass-shadow-xl: rgba(0, 0, 0, 0.5);
-  
+
   /* ----- Dark Mode Gradients ----- */
-  --gradient-primary: linear-gradient(135deg, #22c55e 0%, #15803d 50%, #064e3b 100%);
-  --gradient-primary-light: linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #15803d 100%);
-  --gradient-primary-dark: linear-gradient(135deg, #16a34a 0%, #064e3b 50%, #022c22 100%);
-  --gradient-primary-subtle: linear-gradient(135deg, #86efac 0%, #4ade80 50%, #22c55e 100%);
-  
+  --gradient-primary: linear-gradient(
+    135deg,
+    #22c55e 0%,
+    #15803d 50%,
+    #064e3b 100%
+  );
+  --gradient-primary-light: linear-gradient(
+    135deg,
+    #4ade80 0%,
+    #22c55e 50%,
+    #15803d 100%
+  );
+  --gradient-primary-dark: linear-gradient(
+    135deg,
+    #16a34a 0%,
+    #064e3b 50%,
+    #022c22 100%
+  );
+  --gradient-primary-subtle: linear-gradient(
+    135deg,
+    #86efac 0%,
+    #4ade80 50%,
+    #22c55e 100%
+  );
+
   /* ----- Foody Green Gradients (Icon-specific) ----- */
-  --gradient-foody: linear-gradient(135deg, #22c55e 0%, #15803d 50%, #064e3b 100%);
-  --gradient-foody-light: linear-gradient(135deg, #4ade80 0%, #22c55e 50%, #15803d 100%);
-  --gradient-foody-vibrant: linear-gradient(135deg, #34d399 0%, #22c55e 30%, #15803d 70%, #064e3b 100%);
-  
+  --gradient-foody: linear-gradient(
+    135deg,
+    #22c55e 0%,
+    #15803d 50%,
+    #064e3b 100%
+  );
+  --gradient-foody-light: linear-gradient(
+    135deg,
+    #4ade80 0%,
+    #22c55e 50%,
+    #15803d 100%
+  );
+  --gradient-foody-vibrant: linear-gradient(
+    135deg,
+    #34d399 0%,
+    #22c55e 30%,
+    #15803d 70%,
+    #064e3b 100%
+  );
+
   --shadow-sm: rgba(0, 0, 0, 0.2);
   --shadow-default: rgba(0, 0, 0, 0.25);
   --shadow-md: rgba(0, 0, 0, 0.3);
@@ -194,11 +266,11 @@
    Selection Styles
    ======================================== */
 ::selection {
-  background-color: var(--accent-500);
+  background-color: var(--accent-700, #15803d);
   color: white;
 }
 
 ::-moz-selection {
-  background-color: var(--accent-500);
+  background-color: var(--accent-700, #15803d);
   color: white;
 }

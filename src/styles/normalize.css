@@ -184,12 +184,12 @@ select:focus-visible {
 
 /* --- Selection --- */
 ::selection {
-  background-color: var(--accent-500, #a855f7);
+  background-color: var(--accent-700, #15803d);
   color: white;
 }
 
 ::-moz-selection {
-  background-color: var(--accent-500, #a855f7);
+  background-color: var(--accent-700, #15803d);
   color: white;
 }
 

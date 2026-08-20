@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import path from "path";
-import { fileURLToPath } from "url";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig(({ command, mode }) => {
   const isProduction = mode === "production";
@@ -41,6 +42,32 @@ export default defineConfig(({ command, mode }) => {
       open: true,
       host: true,
       cors: true,
+      // Proxy API requests to backend during development
+      proxy: {
+        "/api": {
+
+          // DEV
+          target: "http://tamam.runasp.net",
+          
+          // PRO
+          // target: "http://api.tamaam.cloud",
+          
+          changeOrigin: true,
+          secure: false,
+          // Optional: Log proxy activity for debugging
+          configure: (proxy, _options) => {
+            proxy.on("error", (err, _req, _res) => {
+              console.log("[Proxy Error]", err.message);
+            });
+            proxy.on("proxyReq", (proxyReq, req, _res) => {
+              console.log("[Proxy Request]", req.method, req.url, "→", proxyReq.path);
+            });
+            proxy.on("proxyRes", (proxyRes, req, _res) => {
+              console.log("[Proxy Response]", proxyRes.statusCode, req.url);
+            });
+          },
+        },
+      },
     },
 
     // Build configuration

@@ -1,9 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { MapPin, Phone, Mail, Send, Headset } from "lucide-react";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Send,
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle2,
+} from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTheme } from "../contexts/ThemeContext";
+import { useLanguage } from "../contexts/LangContext";
 
 const Contact = () => {
+  const { darkMode } = useTheme();
+  const { isRTL } = useLanguage();
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
@@ -11,6 +23,19 @@ const Contact = () => {
     message: "",
   });
   const [sent, setSent] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  useEffect(() => {
+    setIsVisible(false);
+    const timer = setTimeout(() => setIsVisible(true), 50);
+    return () => clearTimeout(timer);
+  }, [isRTL]);
+
+  const dir = isRTL ? "rtl" : "ltr";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,230 +49,282 @@ const Contact = () => {
 
   const inputStyle = {
     width: "100%",
-    padding: "clamp(10px, 1.5vw, 14px) clamp(12px, 1.5vw, 16px)",
-    borderRadius: "12px",
-    border: "1px solid var(--border-light)",
-    backgroundColor: "var(--bg-secondary)",
-    color: "var(--text-primary)",
-    fontSize: "clamp(13px, 1.5vw, 14px)",
+    padding: "12px 16px",
+    borderRadius: "14px",
+    border: darkMode
+      ? "1px solid rgba(255,255,255,0.08)"
+      : "1px solid rgba(0,0,0,0.08)",
+    backgroundColor: darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
+    color: darkMode ? "#f4f4f5" : "#18181b",
+    fontSize: "14px",
     outline: "none",
     fontFamily: "inherit",
+    direction: dir,
   };
 
-  const cardStyle = {
-    display: "flex",
-    alignItems: "flex-start",
-    gap: "clamp(10px, 1.5vw, 14px)",
-    padding: "clamp(12px, 1.5vw, 16px)",
-    borderRadius: "12px",
-    border: "1px solid var(--border-light)",
-    backgroundColor: "var(--bg-secondary)",
-  };
+  const contactCards = [
+    { icon: MapPin, title: t("contact.address"), subtitle: t("contact.hours") },
+    { icon: Phone, title: t("contact.phone"), subtitle: t("contact.hours") },
+    { icon: Mail, title: t("contact.email_us"), subtitle: t("contact.hours") },
+  ];
 
   return (
-    <div
-      style={{ minHeight: "100vh", padding: "clamp(60px, 8vw, 100px) 20px" }}
-    >
-      <div style={{ maxWidth: "960px", margin: "0 auto" }}>
-        {/* Title */}
-        <p
+    <div style={{ minHeight: "100vh" }}>
+      <div
+        style={{
+          maxWidth: "1000px",
+          margin: "0 auto",
+          padding: "100px 24px 80px",
+        }}
+      >
+        {/* Back Navigation */}
+        <Link
+          to="/"
           style={{
-            fontSize: "10px",
-            fontWeight: 600,
-            color: "var(--accent-500)",
-            textTransform: "uppercase",
-            letterSpacing: "1.5px",
-            marginBottom: "10px",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            color: darkMode ? "#a1a1aa" : "#71717a",
+            textDecoration: "none",
+            fontSize: "14px",
+            fontWeight: 500,
+            marginBottom: "40px",
+            transition: "color 0.2s ease",
+            direction: dir,
+          }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.color = "var(--accent-500)")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.color = darkMode ? "#a1a1aa" : "#71717a")
+          }
+        >
+          {isRTL ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
+          <span>{t("common.back")}</span>
+        </Link>
+
+        {/* Header */}
+        <div
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? "translateY(0)" : "translateY(20px)",
+            transition: "all 0.6s ease",
+            direction: dir,
+            marginBottom: "48px",
           }}
         >
-          {t("nav.contact")}
-        </p>
-        <h1
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "6px 16px",
+              borderRadius: "100px",
+              backgroundColor: darkMode
+                ? "rgba(34,197,94,0.12)"
+                : "rgba(34,197,94,0.08)",
+              color: "var(--accent-500)",
+              fontSize: "12px",
+              fontWeight: 600,
+              letterSpacing: isRTL ? "0" : "0.02em",
+              marginBottom: "20px",
+            }}
+          >
+            <Mail size={14} style={{ flexShrink: 0 }} />
+            <span>{t("nav.contact")}</span>
+          </div>
+
+          <h1
+            style={{
+              fontSize: "clamp(28px, 4vw, 40px)",
+              fontWeight: 800,
+              color: darkMode ? "#f4f4f5" : "#09090b",
+              letterSpacing: isRTL ? "0" : "-0.02em",
+              lineHeight: 1.15,
+              marginBottom: "12px",
+            }}
+          >
+            {t("contact.title")}
+          </h1>
+
+          <p
+            style={{
+              fontSize: "15px",
+              color: darkMode ? "#a1a1aa" : "#52525b",
+              lineHeight: 1.7,
+              margin: 0,
+              maxWidth: "520px",
+            }}
+          >
+            {t("contact.subtitle")}
+          </p>
+        </div>
+
+        {/* Contact Cards */}
+        <div
           style={{
-            fontSize: "clamp(26px, 5vw, 36px)",
-            fontWeight: 700,
-            color: "var(--text-primary)",
-            lineHeight: 1.15,
-            marginBottom: "12px",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "12px",
+            marginBottom: "48px",
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? "translateY(0)" : "translateY(16px)",
+            transition: "all 0.5s ease 0.15s",
+            direction: dir,
           }}
         >
-          {t("contact.title")}
-        </h1>
-        <p
-          style={{
-            fontSize: "clamp(13px, 1.8vw, 15px)",
-            color: "var(--text-secondary)",
-            lineHeight: 1.6,
-            marginBottom: "clamp(40px, 5vw, 56px)",
-            maxWidth: "520px",
-          }}
-        >
-          {t("contact.subtitle")}
-        </p>
+          {contactCards.map((card, i) => {
+            const Icon = card.icon;
+            return (
+              <div
+                key={i}
+                style={{
+                  padding: "20px",
+                  borderRadius: "16px",
+                  backgroundColor: darkMode
+                    ? "rgba(255,255,255,0.02)"
+                    : "rgba(255,255,255,0.8)",
+                  backdropFilter: "blur(20px)",
+                  border: darkMode
+                    ? "1px solid rgba(255,255,255,0.05)"
+                    : "1px solid rgba(0,0,0,0.06)",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "12px",
+                  opacity: isVisible ? 1 : 0,
+                  transform: isVisible ? "translateY(0)" : "translateY(10px)",
+                  transition: `all 0.4s ease ${0.2 + i * 0.06}s`,
+                }}
+              >
+                <div
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "10px",
+                    backgroundColor: darkMode
+                      ? "rgba(34,197,94,0.15)"
+                      : "rgba(34,197,94,0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    color: "var(--accent-500)",
+                  }}
+                >
+                  <Icon size={18} />
+                </div>
+                <div>
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      color: darkMode ? "#f4f4f5" : "#18181b",
+                      marginBottom: "2px",
+                    }}
+                  >
+                    {card.title}
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "11px",
+                      color: darkMode ? "#71717a" : "#a1a1aa",
+                    }}
+                  >
+                    {card.subtitle}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
 
         {/* Two Column Layout */}
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: "clamp(24px, 3vw, 40px)",
-            marginBottom: "clamp(40px, 5vw, 60px)",
+            gap: "32px",
+            marginBottom: "60px",
+            alignItems: "stretch",
           }}
         >
-          {/* Left - Contact Info */}
+          {/* Map */}
           <div
-            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+            style={{
+              borderRadius: "18px",
+              overflow: "hidden",
+              border: darkMode
+                ? "1px solid rgba(255,255,255,0.06)"
+                : "1px solid rgba(0,0,0,0.06)",
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? "translateY(0)" : "translateY(16px)",
+              transition: "all 0.5s ease 0.35s",
+              display: "flex",
+            }}
           >
-            {/* Map */}
-            <div
-              style={{
-                borderRadius: "12px",
-                overflow: "hidden",
-                border: "1px solid var(--border-light)",
-                height: "clamp(140px, 20vw, 200px)",
-              }}
-            >
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3454.0!2d31.2357!3d30.0444!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14583fa60b21beeb%3A0x79dfb296e8423bba!2sCairo%2C%20Egypt!5e0!3m2!1sen!2seg!4v1"
-                width="100%"
-                height="100%"
-                style={{ border: "none" }}
-                allowFullScreen=""
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="TamamApp Location"
-              />
-            </div>
-
-            {/* Address */}
-            <div style={cardStyle}>
-              <MapPin
-                size={18}
-                style={{
-                  color: "var(--accent-500)",
-                  flexShrink: 0,
-                  marginTop: "2px",
-                }}
-              />
-              <div>
-                <p
-                  style={{
-                    fontSize: "clamp(13px, 1.5vw, 14px)",
-                    fontWeight: 600,
-                    color: "var(--text-primary)",
-                    marginBottom: "2px",
-                  }}
-                >
-                  {t("contact.address")}
-                </p>
-                <p
-                  style={{
-                    fontSize: "clamp(11px, 1.3vw, 13px)",
-                    color: "var(--text-tertiary)",
-                  }}
-                >
-                  {t("contact.hours")}
-                </p>
-              </div>
-            </div>
-
-            {/* Phone */}
-            <div style={cardStyle}>
-              <Phone
-                size={18}
-                style={{
-                  color: "var(--accent-500)",
-                  flexShrink: 0,
-                  marginTop: "2px",
-                }}
-              />
-              <div>
-                <p
-                  style={{
-                    fontSize: "clamp(13px, 1.5vw, 14px)",
-                    fontWeight: 600,
-                    color: "var(--text-primary)",
-                    marginBottom: "2px",
-                  }}
-                >
-                  {t("contact.phone")}
-                </p>
-                <p
-                  style={{
-                    fontSize: "clamp(11px, 1.3vw, 13px)",
-                    color: "var(--text-tertiary)",
-                  }}
-                >
-                  {t("contact.hours")}
-                </p>
-              </div>
-            </div>
-
-            {/* Email */}
-            <div style={cardStyle}>
-              <Mail
-                size={18}
-                style={{
-                  color: "var(--accent-500)",
-                  flexShrink: 0,
-                  marginTop: "2px",
-                }}
-              />
-              <div>
-                <p
-                  style={{
-                    fontSize: "clamp(13px, 1.5vw, 14px)",
-                    fontWeight: 600,
-                    color: "var(--text-primary)",
-                    marginBottom: "2px",
-                  }}
-                >
-                  {t("contact.email_us")}
-                </p>
-                <p
-                  style={{
-                    fontSize: "clamp(11px, 1.3vw, 13px)",
-                    color: "var(--text-tertiary)",
-                  }}
-                >
-                  {t("contact.hours")}
-                </p>
-              </div>
-            </div>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3454.0!2d31.2357!3d30.0444!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14583fa60b21beeb%3A0x79dfb296e8423bba!2sCairo%2C%20Egypt!5e0!3m2!1sen!2seg!4v1"
+              width="100%"
+              height="100%"
+              style={{ border: "none", flex: 1 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Tamam Location"
+            />
           </div>
 
-          {/* Right - Form */}
-          <div>
-            <p
-              style={{
-                fontSize: "clamp(13px, 1.5vw, 14px)",
-                fontWeight: 500,
-                color: "var(--text-secondary)",
-                marginBottom: "clamp(14px, 2vw, 20px)",
-              }}
-            >
-              {t("contact.formIntro")}
-            </p>
-
+          {/* Form */}
+          <div
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? "translateY(0)" : "translateY(16px)",
+              transition: "all 0.5s ease 0.4s",
+              direction: dir,
+              display: "flex",
+            }}
+          >
             {sent ? (
               <div
                 style={{
-                  padding: "40px 20px",
+                  padding: "60px 20px",
                   textAlign: "center",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border-light)",
-                  backgroundColor: "var(--bg-secondary)",
+                  borderRadius: "18px",
+                  border: darkMode
+                    ? "1px solid rgba(255,255,255,0.06)"
+                    : "1px solid rgba(0,0,0,0.06)",
+                  backgroundColor: darkMode
+                    ? "rgba(255,255,255,0.02)"
+                    : "rgba(255,255,255,0.8)",
+                  backdropFilter: "blur(20px)",
                   display: "flex",
                   flexDirection: "column",
+                  alignItems: "center",
                   justifyContent: "center",
-                  minHeight: "300px",
+                  flex: 1,
                 }}
               >
+                <div
+                  style={{
+                    width: "56px",
+                    height: "56px",
+                    borderRadius: "16px",
+                    backgroundColor: darkMode
+                      ? "rgba(34,197,94,0.2)"
+                      : "rgba(34,197,94,0.12)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: "16px",
+                  }}
+                >
+                  <CheckCircle2 size={28} color="var(--accent-500)" />
+                </div>
                 <p
                   style={{
-                    fontSize: "clamp(15px, 2vw, 16px)",
-                    fontWeight: 600,
-                    color: "var(--text-primary)",
+                    fontSize: "16px",
+                    fontWeight: 700,
+                    color: darkMode ? "#f4f4f5" : "#18181b",
                     marginBottom: "8px",
                   }}
                 >
@@ -255,22 +332,36 @@ const Contact = () => {
                 </p>
                 <p
                   style={{
-                    fontSize: "clamp(13px, 1.5vw, 14px)",
-                    color: "var(--text-secondary)",
+                    fontSize: "14px",
+                    color: darkMode ? "#a1a1aa" : "#71717a",
+                    maxWidth: "300px",
                   }}
                 >
                   {t("contact.successMessage")}
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: "clamp(12px, 1.5vw, 16px)" }}>
+              <form
+                onSubmit={handleSubmit}
+                style={{ display: "flex", flexDirection: "column", flex: 1 }}
+              >
+                <p
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    color: darkMode ? "#a1a1aa" : "#71717a",
+                    marginBottom: "20px",
+                  }}
+                >
+                  {t("contact.formIntro")}
+                </p>
+                <div style={{ marginBottom: "14px" }}>
                   <label
                     style={{
                       display: "block",
-                      fontSize: "clamp(12px, 1.3vw, 13px)",
-                      fontWeight: 500,
-                      color: "var(--text-secondary)",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      color: darkMode ? "#d4d4d8" : "#3f3f46",
                       marginBottom: "6px",
                     }}
                   >
@@ -285,13 +376,13 @@ const Contact = () => {
                     style={inputStyle}
                   />
                 </div>
-                <div style={{ marginBottom: "clamp(12px, 1.5vw, 16px)" }}>
+                <div style={{ marginBottom: "14px" }}>
                   <label
                     style={{
                       display: "block",
-                      fontSize: "clamp(12px, 1.3vw, 13px)",
-                      fontWeight: 500,
-                      color: "var(--text-secondary)",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      color: darkMode ? "#d4d4d8" : "#3f3f46",
                       marginBottom: "6px",
                     }}
                   >
@@ -306,13 +397,20 @@ const Contact = () => {
                     style={inputStyle}
                   />
                 </div>
-                <div style={{ marginBottom: "clamp(16px, 2vw, 20px)" }}>
+                <div
+                  style={{
+                    marginBottom: "20px",
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
                   <label
                     style={{
                       display: "block",
-                      fontSize: "clamp(12px, 1.3vw, 13px)",
-                      fontWeight: 500,
-                      color: "var(--text-secondary)",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      color: darkMode ? "#d4d4d8" : "#3f3f46",
                       marginBottom: "6px",
                     }}
                   >
@@ -327,7 +425,7 @@ const Contact = () => {
                     style={{
                       ...inputStyle,
                       resize: "vertical",
-                      minHeight: "120px",
+                      flex: 1,
                     }}
                   />
                 </div>
@@ -339,14 +437,26 @@ const Contact = () => {
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "8px",
-                    padding: "clamp(10px, 1.5vw, 14px) clamp(16px, 2vw, 24px)",
+                    padding: "14px 24px",
+                    borderRadius: "14px",
                     backgroundColor: "var(--accent-500)",
-                    color: "#fff",
-                    borderRadius: "12px",
-                    fontSize: "clamp(13px, 1.5vw, 14px)",
+                    color: "#ffffff",
+                    fontSize: "15px",
                     fontWeight: 600,
                     border: "none",
                     cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    flexShrink: 0,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = darkMode
+                      ? "0 8px 24px rgba(34,197,94,0.3)"
+                      : "0 8px 24px rgba(34,197,94,0.2)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
                   }}
                 >
                   <Send size={16} />
@@ -361,18 +471,20 @@ const Contact = () => {
         <div
           style={{
             height: "1px",
-            backgroundColor: "var(--border-light)",
-            margin: "clamp(32px, 4vw, 48px) 0",
+            backgroundColor: darkMode
+              ? "rgba(255,255,255,0.06)"
+              : "rgba(0,0,0,0.06)",
+            margin: "0 0 32px",
           }}
         />
 
         {/* FAQ Link */}
-        <div style={{ textAlign: "center" }}>
+        <div style={{ textAlign: "center", direction: dir }}>
           <p
             style={{
-              fontSize: "clamp(13px, 1.5vw, 14px)",
-              color: "var(--text-secondary)",
-              marginBottom: "14px",
+              fontSize: "14px",
+              color: darkMode ? "#a1a1aa" : "#71717a",
+              marginBottom: "16px",
             }}
           >
             {t("faq.stillHaveQuestions")}
@@ -382,17 +494,28 @@ const Contact = () => {
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "8px",
-              padding: "clamp(10px, 1.5vw, 14px) clamp(16px, 2vw, 24px)",
+              gap: "10px",
+              padding: "14px 28px",
+              borderRadius: "14px",
               backgroundColor: "var(--accent-500)",
-              color: "#fff",
-              borderRadius: "12px",
-              fontSize: "clamp(13px, 1.5vw, 14px)",
-              fontWeight: 600,
+              color: "#ffffff",
               textDecoration: "none",
+              fontSize: "15px",
+              fontWeight: 600,
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = darkMode
+                ? "0 8px 24px rgba(34,197,94,0.3)"
+                : "0 8px 24px rgba(34,197,94,0.2)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
             }}
           >
-            <Headset size={16} />
+            <Mail size={18} />
             <span>{t("faq.title")}</span>
           </Link>
         </div>

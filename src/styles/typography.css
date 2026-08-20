@@ -1,23 +1,54 @@
 /* Font Imports */
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap");
 
 /* Base Typography */
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: var(--text-primary);
   background-color: var(--bg-primary);
   line-height: 1.6;
-  transition: background-color var(--transition-normal), color var(--transition-normal);
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal);
 }
 
 /* Arabic Language Typography */
+[dir="rtl"],
 [dir="rtl"] body,
+[dir="rtl"] *,
+html[lang="ar"],
 html[lang="ar"] body {
-  font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Tajawal",
+    "Cairo",
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] h4,
+[dir="rtl"] h5,
+[dir="rtl"] h6,
+[dir="rtl"] p,
+[dir="rtl"] span,
+[dir="rtl"] div {
+  font-family: inherit;
 }
 
 /* Headings */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -41,7 +72,12 @@ h4 {
 
 /* Gradient Text */
 .gradient-text {
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-middle), var(--gradient-end));
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start),
+    var(--gradient-middle),
+    var(--gradient-end)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -69,7 +105,12 @@ h4 {
 }
 
 [dir="rtl"] .gradient-text {
-  background: linear-gradient(315deg, var(--gradient-start), var(--gradient-middle), var(--gradient-end));
+  background: linear-gradient(
+    315deg,
+    var(--gradient-start),
+    var(--gradient-middle),
+    var(--gradient-end)
+  );
   background-clip: text;
   -webkit-background-clip: text;
 }
@@ -85,12 +126,12 @@ a:hover {
 
 /* Selection Color */
 ::selection {
-  background-color: rgba(147, 51, 234, 0.2);
+  background-color: var(--accent-700, #15803d);
   color: var(--text-primary);
 }
 
 ::-moz-selection {
-  background-color: rgba(147, 51, 234, 0.2);
+  background-color: var(--accent-700, #15803d);
   color: var(--text-primary);
 }
 
