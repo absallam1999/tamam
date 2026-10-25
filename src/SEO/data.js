@@ -1,6 +1,6 @@
 export const seoData = {
   home: {
-    title: "Fastest Delivery at Your Doorstep",
+    title: "Fast, Secure & Reliable - Tamam App",
     description:
       "Tamam - Home delivery and online reservation system for restaurants, cafe, medicine, food & groceries. Fast delivery in 30 minutes.",
     keywords:
