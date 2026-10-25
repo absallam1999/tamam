@@ -1,7 +1,7 @@
 {
   "name": "Tamam App",
   "short_name": "Tamam",
-  "description": "Fast & Reliable Delivery Service - Food, Groceries & Packages Delivered in Minutes",
+  "description": "Fast, Secure & Reliable Delivery Service - Food, Groceries & Packages Delivered in Minutes",
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#4ade80",
@@ -110,7 +110,7 @@
       "label": "Mobile Home"
     }
   ],
-  "categories": ["lifestyle", "food", "shopping", "utilities"],
+  "categories": ["delivery", "food", "shopping", "packages"],
   "shortcuts": [
     {
       "name": "Order Now",
@@ -126,26 +126,13 @@
       ]
     },
     {
-      "name": "Track Order",
-      "short_name": "Track",
-      "description": "Track your current order",
-      "url": "/track",
+      "name": "About Us",
+      "short_name": "About",
+      "description": "Learn more about Tamam App",
+      "url": "/about",
       "icons": [
         {
-          "src": "/icons/shortcut-track.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "View Cart",
-      "short_name": "Cart",
-      "description": "View your shopping cart",
-      "url": "/cart",
-      "icons": [
-        {
-          "src": "/icons/shortcut-cart.png",
+          "src": "/icons/shortcut-about.png",
           "sizes": "96x96",
           "type": "image/png"
         }
