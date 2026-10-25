@@ -6,10 +6,10 @@ Disallow: /private/
 Disallow: /api/
 
 # Sitemap location
-Sitemap: https://tamaam.cloud/sitemap.xml
+Sitemap: https://tamamapp.net/sitemap.xml
 
 # Crawl delay for bots
 Crawl-delay: 1
 
 # Host
-Host: https://tamaam.cloud
+Host: https://tamamapp.net

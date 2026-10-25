@@ -311,7 +311,7 @@ const StoreAppPage = () => {
               }}
             >
               <a
-                href="#"
+                href="https://store.tamaam.cloud"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -1137,7 +1137,7 @@ const StoreAppPage = () => {
             }}
           >
             <a
-              href="#"
+              href="https://store.tamaam.cloud"
               style={{
                 display: "inline-flex",
                 alignItems: "center",

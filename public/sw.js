@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tamam-app-v1.0.0'
+const CACHE_NAME = 'tamam-v1.0'
 const urlsToCache = [
   '/',
   '/index.html',

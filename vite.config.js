@@ -45,13 +45,7 @@ export default defineConfig(({ command, mode }) => {
       // Proxy API requests to backend during development
       proxy: {
         "/api": {
-
-          // DEV
-          target: "http://tamam.runasp.net",
-          
-          // PRO
-          // target: "http://api.tamaam.cloud",
-          
+          target: "https://dist.tamamapp.net",
           changeOrigin: true,
           secure: false,
           // Optional: Log proxy activity for debugging
