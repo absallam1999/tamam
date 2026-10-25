@@ -11,7 +11,7 @@ const SEO = ({
   noIndex = false,
 }) => {
   const location = useLocation();
-  const siteName = "Tamam";
+  const siteName = "Tamam App";
   const baseUrl = window.location.origin;
   const currentUrl = canonicalUrl || `${baseUrl}${location.pathname}`;
 
