@@ -22,7 +22,6 @@ function App() {
       }}
     >
       <Navbar />
-      <ScrollToTop />
       <main className="flex-1 pt-20">
         <AnimatePresence mode="wait">
           <motion.div
@@ -33,6 +32,7 @@ function App() {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
             <AppRoutes />
+            <ScrollToTop />
           </motion.div>
         </AnimatePresence>
       </main>
