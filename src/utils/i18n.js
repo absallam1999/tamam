@@ -456,7 +456,7 @@ const resources = {
         error: "Failed to send. Please try again.",
         address: "Beheira Governorate, Egypt",
         phone: "+1 (234) 567-8900",
-        email_us: "support@tamaam.cloud",
+        email_us: "support@tamamapp.net",
         hours: "Sat–Fri: 9am–8pm",
       },
 
@@ -503,7 +503,7 @@ const resources = {
         deletion: {
           title: "7. Account & Data Deletion Policy",
           content:
-            "You can permanently delete your account and data through: the app (Settings > Account > Delete Account), or via the web deletion link (tamaam.cloud/delete-account). Immediately deleted: name, phone number, saved addresses, location history, and wallet closure. Only anonymized financial transaction records are retained for legally required tax periods.",
+            "You can permanently delete your account and data through: the app (Settings > Account > Delete Account), or via the web deletion link (tamamapp.net/contact). Immediately deleted: name, phone number, saved addresses, location history, and wallet closure. Only anonymized financial transaction records are retained for legally required tax periods.",
         },
         rights: {
           title: "8. User Rights & Data Control",
@@ -523,7 +523,7 @@ const resources = {
         contact: {
           title: "11. Data Protection Officer & Contact Information",
           content:
-            "For privacy inquiries, complaints, or to exercise your data rights, contact our Data Protection Officer (DPO) at contact@tamaam.cloud. Official response time: within 30 days of receiving your request and verifying your identity. Account deletion link: tamaam.cloud/delete-account",
+            "For privacy inquiries, complaints, or to exercise your data rights, contact our Data Protection Officer (DPO) at contact@tamamapp.net. Official response time: within 30 days of receiving your request and verifying your identity. Account deletion link: tamamapp.net/contact.",
         },
       },
 
@@ -641,7 +641,7 @@ const resources = {
           q10: "How do I reset my password?",
           a10: "Tap 'Forgot Password' on the login screen. We'll send you a link to reset your password via email or SMS.",
           q11: "How do I contact customer support?",
-          a11: "You can reach us 24/7 via in-app chat, email at support@tamaam.cloud, or call us at +1 (234) 567-8900.",
+          a11: "You can reach us 24/7 via in-app chat, email at support@tamamapp.net, or call us at +1 (234) 567-8900.",
           q12: "Can I cancel my order?",
           a12: "You can cancel your order within 2 minutes of placing it. After that, the restaurant may have already started preparing your food.",
           q13: "Do you offer refunds?",
@@ -653,7 +653,7 @@ const resources = {
         },
         stillHaveQuestions: "Still have questions?",
         contactSupport: "Contact our support team",
-        supportEmail: "support@tamaam.cloud",
+        supportEmail: "support@tamamapp.net",
         supportPhone: "+1 (234) 567-8900",
         liveChat: "Live Chat",
         noResults: "No results found",
@@ -677,7 +677,7 @@ const resources = {
         },
         data_controller: {
           title: "Data Controller",
-          content: "TamamApp Inc., support@tamaam.cloud",
+          content: "TamamApp Inc., support@tamamapp.net",
         },
         consent: {
           title: "Your Consent",
@@ -687,7 +687,7 @@ const resources = {
         contact: {
           title: "Contact Our DPO",
           content:
-            "For GDPR‑related requests, please email support@tamaam.cloud.",
+            "For GDPR‑related requests, please email contact@tamamapp.net.",
         },
       },
 
@@ -1160,7 +1160,7 @@ const resources = {
         error: "فشل الإرسال. حاول مرة أخرى.",
         address: "محافظة البحيرة, مصر",
         phone: "+1 (234) 567-8900",
-        email_us: "support@tamaam.cloud",
+        email_us: "support@tamamapp.net",
         hours: "السبت–الجمعة: 9ص–8م",
       },
 
@@ -1205,7 +1205,7 @@ const resources = {
         deletion: {
           title: "7. آلية حذف الحساب والبيانات",
           content:
-            "يمكنك حذف حسابك نهائياً من داخل التطبيق (الإعدادات > الحساب > حذف الحساب) أو عبر رابط الحذف المباشر (tamaam.cloud/delete-account). يتم مسح الاسم ورقم الهاتف والعناوين وسجل الموقع فوراً. نحتفظ فقط بسجلات الفواتير للفترات المطلوبة ضريبياً في أرشيف مجهّل.",
+            "يمكنك حذف حسابك نهائياً من داخل التطبيق (الإعدادات > الحساب > حذف الحساب) أو عبر رابط الحذف المباشر (tamamapp.net/delete-account). يتم مسح الاسم ورقم الهاتف والعناوين وسجل الموقع فوراً. نحتفظ فقط بسجلات الفواتير للفترات المطلوبة ضريبياً في أرشيف مجهّل.",
         },
         rights: {
           title: "8. حقوق المستخدم والتحكم بالبيانات",
@@ -1225,7 +1225,7 @@ const resources = {
         contact: {
           title: "11. مسؤول حماية البيانات ومعلومات الاتصال",
           content:
-            "للاستفسارات أو الشكاوى المتعلقة بالخصوصية، تواصل مع مسؤول حماية البيانات (DPO) عبر contact@tamaam.cloud. مدة الرد الرسمية: 30 يوماً من استلام الطلب والتحقق من الهوية. رابط حذف الحساب: tamaam.cloud/delete-account",
+            "للاستفسارات أو الشكاوى المتعلقة بالخصوصية، تواصل مع مسؤول حماية البيانات (DPO) عبر contact@tamamapp.net. مدة الرد الرسمية: 30 يوماً من استلام الطلب والتحقق من الهوية. رابط حذف الحساب: tamamapp.net/contact.",
         },
       },
 
@@ -1343,7 +1343,7 @@ const resources = {
           q10: "كيف يمكنني إعادة تعيين كلمة المرور؟",
           a10: "اضغط على 'نسيت كلمة المرور' في شاشة تسجيل الدخول. سنرسل لك رابطاً لإعادة تعيين كلمة المرور عبر البريد الإلكتروني أو الرسائل النصية.",
           q11: "كيف يمكنني الاتصال بدعم العملاء؟",
-          a11: "يمكنك التواصل معنا على مدار الساعة عبر الدردشة داخل التطبيق أو البريد الإلكتروني support@tamaam.cloud أو الاتصال على +1 (234) 567-8900.",
+          a11: "يمكنك التواصل معنا على مدار الساعة عبر الدردشة داخل التطبيق أو البريد الإلكتروني support@tamamapp.net أو الاتصال على +1 (234) 567-8900.",
           q12: "هل يمكنني إلغاء طلبي؟",
           a12: "يمكنك إلغاء طلبك خلال دقيقتين من تقديمه. بعد ذلك، قد يكون المطعم قد بدأ في تحضير طعامك.",
           q13: "هل تقدمون استرداد الأموال؟",
@@ -1355,7 +1355,7 @@ const resources = {
         },
         stillHaveQuestions: "لا تزال لديك أسئلة؟",
         contactSupport: "اتصل بفريق الدعم",
-        supportEmail: "support@tamaam.cloud",
+        supportEmail: "support@tamamapp.net",
         supportPhone: "+1 (234) 567-8900",
         liveChat: "محادثة مباشرة",
         noResults: "لم يتم العثور على نتائج",
@@ -1379,7 +1379,7 @@ const resources = {
         },
         data_controller: {
           title: "مراقب البيانات",
-          content: "TamamApp Inc، support@tamaam.cloud",
+          content: "TamamApp Inc، support@tamamapp.net",
         },
         consent: {
           title: "موافقتك",
@@ -1389,7 +1389,7 @@ const resources = {
         contact: {
           title: "الاتصال بمسؤول حماية البيانات",
           content:
-            "لأي طلبات متعلقة بـ GDPR، يرجى إرسال بريد إلكتروني إلى support@tamaam.cloud.",
+            "لأي طلبات متعلقة بـ GDPR، يرجى إرسال بريد إلكتروني إلى contact@tamamapp.net.",
         },
       },
 

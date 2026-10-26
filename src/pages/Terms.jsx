@@ -197,7 +197,7 @@ const Terms = () => {
             {t("terms.supportText")}
           </p>
           <a
-            href="mailto:support@tamaam.cloud"
+            href="mailto:support@tamamapp.net"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -223,7 +223,7 @@ const Terms = () => {
             }}
           >
             <Mail size={18} />
-            <span>support@tamaam.cloud</span>
+            <span>support@tamamapp.net</span>
           </a>
         </div>
       </div>

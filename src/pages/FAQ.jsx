@@ -431,7 +431,7 @@ const FAQ = () => {
             {t("faq.stillHaveQuestions")}
           </p>
           <a
-            href="mailto:contact@tamaam.cloud"
+            href="mailto:contact@tamamapp.net"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -457,7 +457,7 @@ const FAQ = () => {
             }}
           >
             <Mail size={18} />
-            <span>contact@tamaam.cloud</span>
+            <span>contact@tamamapp.net</span>
           </a>
         </div>
       </div>

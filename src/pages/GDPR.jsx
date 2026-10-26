@@ -333,7 +333,7 @@ const GDPR = () => {
             {t("faq.stillHaveQuestions")}
           </p>
           <a
-            href="mailto:dpo@tamaam.cloud"
+            href="mailto:contact@tamamapp.net"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -359,7 +359,7 @@ const GDPR = () => {
             }}
           >
             <Mail size={18} />
-            <span>support@tamaam.cloud</span>
+            <span>contact@tamamapp.net</span>
           </a>
         </div>
       </div>

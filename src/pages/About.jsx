@@ -353,7 +353,7 @@ const About = () => {
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Mail size={16} color="var(--accent-500)" />
               <a
-                href="mailto:contact@tamaam.cloud"
+                href="mailto:contact@tamamapp.net"
                 style={{
                   fontSize: "14px",
                   color: "var(--accent-500)",
@@ -361,7 +361,7 @@ const About = () => {
                   fontWeight: 500,
                 }}
               >
-                contact@tamaam.cloud
+                contact@tamamapp.net
               </a>
             </div>
           </div>

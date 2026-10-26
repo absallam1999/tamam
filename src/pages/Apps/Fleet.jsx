@@ -316,7 +316,7 @@ const FleetAppPage = () => {
               }}
             >
               <a
-                href="https://fleet.tamaam.cloud"
+                href="https://fleet.tamamapp.net"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -1313,7 +1313,7 @@ const FleetAppPage = () => {
             }}
           >
             <a
-              href="https://fleet.tamaam.cloud"
+              href="https://fleet.tamamapp.net"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
