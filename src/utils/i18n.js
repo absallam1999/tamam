@@ -523,7 +523,7 @@ const resources = {
         contact: {
           title: "11. Data Protection Officer & Contact Information",
           content:
-            "For privacy inquiries, complaints, or to exercise your data rights, contact our Data Protection Officer (DPO) at contact@tamamapp.net. Official response time: within 30 days of receiving your request and verifying your identity. Account deletion link: tamamapp.net/contact.",
+            "For privacy inquiries, complaints, or to exercise your data rights, contact our Data Protection Officer (DPO) at support@tamamapp.net. Official response time: within 30 days of receiving your request and verifying your identity. Account deletion link: tamamapp.net/contact.",
         },
       },
 
@@ -677,7 +677,7 @@ const resources = {
         },
         data_controller: {
           title: "Data Controller",
-          content: "TamamApp Inc., support@tamamapp.net",
+          content: "TamamApp Inc., contact@tamamapp.net",
         },
         consent: {
           title: "Your Consent",
@@ -1205,7 +1205,7 @@ const resources = {
         deletion: {
           title: "7. آلية حذف الحساب والبيانات",
           content:
-            "يمكنك حذف حسابك نهائياً من داخل التطبيق (الإعدادات > الحساب > حذف الحساب) أو عبر رابط الحذف المباشر (tamamapp.net/delete-account). يتم مسح الاسم ورقم الهاتف والعناوين وسجل الموقع فوراً. نحتفظ فقط بسجلات الفواتير للفترات المطلوبة ضريبياً في أرشيف مجهّل.",
+            "يمكنك حذف حسابك نهائياً من داخل التطبيق (الإعدادات > الحساب > حذف الحساب) أو عبر رابط الحذف المباشر (tamamapp.net/contact). يتم مسح الاسم ورقم الهاتف والعناوين وسجل الموقع فوراً. نحتفظ فقط بسجلات الفواتير للفترات المطلوبة ضريبياً في أرشيف مجهّل.",
         },
         rights: {
           title: "8. حقوق المستخدم والتحكم بالبيانات",
@@ -1379,7 +1379,7 @@ const resources = {
         },
         data_controller: {
           title: "مراقب البيانات",
-          content: "TamamApp Inc، support@tamamapp.net",
+          content: "TamamApp Inc، contact@tamamapp.net",
         },
         consent: {
           title: "موافقتك",

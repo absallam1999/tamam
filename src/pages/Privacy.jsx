@@ -174,7 +174,7 @@ const Privacy = () => {
                 {t("privacy.contactEmail")}:
               </span>
               <a
-                href="mailto:support@tamamapp.net"
+                href="mailto:contact@tamamapp.net"
                 style={{
                   fontSize: "13px",
                   color: "var(--accent-500)",
@@ -182,7 +182,7 @@ const Privacy = () => {
                   fontWeight: 600,
                 }}
               >
-                support@tamamapp.net
+                contact@tamamapp.net
               </a>
             </div>
           </div>
@@ -248,7 +248,7 @@ const Privacy = () => {
             {t("privacy.questions")}
           </p>
           <a
-            href="mailto:support@tamamapp.net"
+            href="mailto:contact@tamamapp.net"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -274,7 +274,7 @@ const Privacy = () => {
             }}
           >
             <Mail size={18} />
-            <span>support@tamamapp.net</span>
+            <span>contact@tamamapp.net</span>
           </a>
         </div>
       </div>
