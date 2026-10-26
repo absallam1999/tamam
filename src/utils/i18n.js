@@ -1425,6 +1425,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
+    lng: localStorage.getItem("i18nextLng") || "ar",
     fallbackLng: "en",
     detection: {
       order: ["localStorage", "navigator"],
