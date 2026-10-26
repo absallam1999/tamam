@@ -22,7 +22,7 @@ export const LangProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const savedLang = localStorage.getItem("i18nextLng") || "en";
+    const savedLang = localStorage.getItem("i18nextLng") || "ar";
     changeLanguage(savedLang);
   }, []);
 
@@ -32,7 +32,7 @@ export const LangProvider = ({ children }) => {
     <LangContext.Provider
       value={{
         currentLanguage: i18n.language,
-        isRTL, // Add this!
+        isRTL,
         changeLanguage,
       }}
     >
