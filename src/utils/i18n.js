@@ -458,6 +458,9 @@ const resources = {
         phone: "+1 (234) 567-8900",
         email_us: "support@tamamapp.net",
         hours: "Sat–Fri: 9am–8pm",
+        addressSubtitle: "Visit our office",
+        phoneSubtitle: "Sat–Fri: 9am–8pm",
+        emailSubtitle: "We reply within 2 hours",
       },
 
       // ========== PRIVACY POLICY PAGE ==========
@@ -1162,6 +1165,9 @@ const resources = {
         phone: "+1 (234) 567-8900",
         email_us: "support@tamamapp.net",
         hours: "السبت–الجمعة: 9ص–8م",
+        addressSubtitle: "قم بزيارة مكتبنا",
+        phoneSubtitle: "السبت–الجمعة: 9ص–8م",
+        emailSubtitle: "نرد خلال 2 ساعة",
       },
 
       // ========== PRIVACY POLICY PAGE ==========

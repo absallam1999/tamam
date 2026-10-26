@@ -63,9 +63,21 @@ const Contact = () => {
   };
 
   const contactCards = [
-    { icon: MapPin, title: t("contact.address"), subtitle: t("contact.hours") },
-    { icon: Phone, title: t("contact.phone"), subtitle: t("contact.hours") },
-    { icon: Mail, title: t("contact.email_us"), subtitle: t("contact.hours") },
+    {
+      icon: MapPin,
+      title: t("contact.address"),
+      subtitle: t("contact.addressSubtitle"),
+    },
+    {
+      icon: Phone,
+      title: t("contact.phone"),
+      subtitle: t("contact.phoneSubtitle"),
+    },
+    {
+      icon: Mail,
+      title: t("contact.email_us"),
+      subtitle: t("contact.emailSubtitle"),
+    },
   ];
 
   return (
