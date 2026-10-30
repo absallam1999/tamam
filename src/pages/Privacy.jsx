@@ -4,8 +4,6 @@ import { useTranslation } from "react-i18next";
 import {
   Shield,
   Mail,
-  ExternalLink,
-  ChevronRight,
   ArrowLeft,
   ArrowRight,
 } from "lucide-react";
