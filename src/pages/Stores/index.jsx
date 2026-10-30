@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import {
   Star,
   MapPin,
@@ -20,7 +19,6 @@ import { useAllStores } from "../../hooks/useBrowse";
 const Stores = () => {
   const { darkMode } = useTheme();
   const { isRTL } = useLanguage();
-  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
 
   const {

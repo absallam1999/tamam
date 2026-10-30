@@ -193,8 +193,8 @@ const Home = () => {
       icon: Package,
       title: isRTL ? "خصص طلبك وادفع بأمان" : "Customize & Pay Securely",
       desc: isRTL
-        ? "أضف ملاحظاتك وخياراتك وادفع بالمحفظة أو نقداً عند الاستلام."
-        : "Tailor dishes to your taste and pay via card, digital wallet, or cash on delivery.",
+        ? "أضف ملاحظاتك وخياراتك وادفع بالمحفظة، انستاباى أو نقداً عند الاستلام."
+        : "Tailor dishes to your taste and pay via mobile wallet, InstaPay or cash on delivery.",
     },
     {
       step: "03",

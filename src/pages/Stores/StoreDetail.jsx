@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import {
   Star,
   MapPin,
@@ -9,17 +8,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Phone,
-  Globe,
   ShoppingBag,
-  Package,
-  UtensilsCrossed,
-  Pill,
-  Zap,
-  Shield,
-  Heart,
-  Share2,
-  ChevronRight,
-  ChevronLeft,
   ExternalLink,
 } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
@@ -30,7 +19,6 @@ const StoreDetail = () => {
   const { id } = useParams();
   const { darkMode } = useTheme();
   const { isRTL } = useLanguage();
-  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);

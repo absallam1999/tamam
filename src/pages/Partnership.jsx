@@ -14,6 +14,7 @@ import {
   User,
   Mail,
   FileText,
+  Handshake,
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
@@ -217,7 +218,7 @@ const Partnership = () => {
               marginBottom: "20px",
             }}
           >
-            <Building2 size={14} style={{ flexShrink: 0 }} />
+            <Handshake size={14} style={{ flexShrink: 0 }} />
             <span>{t("nav.partnership")}</span>
           </div>
 

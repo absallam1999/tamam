@@ -8,10 +8,52 @@ import {
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
+  MessageSquare,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LangContext";
+
+/* =========================================================
+   SHARED DESIGN TOKENS
+   ========================================================= */
+const TOKENS = {
+  dark: {
+    text: "#f4f4f5",
+    textStrong: "#fafafa",
+    textMuted: "#a1a1aa",
+    textFaint: "#71717a",
+    border: "rgba(255,255,255,0.06)",
+    borderStrong: "rgba(255,255,255,0.10)",
+    surface: "rgba(24, 24, 27, 0.72)",
+    surfaceGradient:
+      "linear-gradient(135deg, rgba(24,24,27,0.72) 0%, rgba(15,15,17,0.60) 100%)",
+    surfaceSolid: "#18181b",
+    badgeBg: "rgba(34,197,94,0.12)",
+    badgeBorder: "rgba(34,197,94,0.28)",
+    chipBg: "rgba(255,255,255,0.03)",
+    shadow:
+      "0 20px 50px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.05)",
+  },
+  light: {
+    text: "#18181b",
+    textStrong: "#09090b",
+    textMuted: "#52525b",
+    textFaint: "#71717a",
+    border: "rgba(0,0,0,0.06)",
+    borderStrong: "rgba(0,0,0,0.10)",
+    surface: "rgba(255,255,255,0.85)",
+    surfaceGradient:
+      "linear-gradient(135deg, rgba(255,255,255,0.90) 0%, rgba(250,250,250,0.75) 100%)",
+    surfaceSolid: "#ffffff",
+    badgeBg: "rgba(34,197,94,0.08)",
+    badgeBorder: "rgba(34,197,94,0.22)",
+    chipBg: "rgba(0,0,0,0.02)",
+    shadow: "0 20px 50px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)",
+  },
+};
+
+const ACCENT = "var(--accent-500, #22c55e)";
 
 const Contact = () => {
   const { darkMode } = useTheme();
@@ -24,6 +66,14 @@ const Contact = () => {
   });
   const [sent, setSent] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     setIsVisible(true);
@@ -31,11 +81,20 @@ const Contact = () => {
 
   useEffect(() => {
     setIsVisible(false);
-    const timer = setTimeout(() => setIsVisible(true), 50);
+    const timer = setTimeout(() => setIsVisible(true), 40);
     return () => clearTimeout(timer);
   }, [isRTL]);
 
   const dir = isRTL ? "rtl" : "ltr";
+  const c = darkMode ? TOKENS.dark : TOKENS.light;
+
+  const glassStyle = {
+    background: c.surfaceGradient,
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    border: `1px solid ${c.border}`,
+    boxShadow: c.shadow,
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -49,112 +108,188 @@ const Contact = () => {
 
   const inputStyle = {
     width: "100%",
-    padding: "12px 16px",
+    padding: "13px 16px",
     borderRadius: "14px",
-    border: darkMode
-      ? "1px solid rgba(255,255,255,0.08)"
-      : "1px solid rgba(0,0,0,0.08)",
-    backgroundColor: darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
-    color: darkMode ? "#f4f4f5" : "#18181b",
+    border: `1px solid ${c.border}`,
+    backgroundColor: darkMode
+      ? "rgba(255,255,255,0.03)"
+      : "rgba(255,255,255,0.8)",
+    color: c.text,
     fontSize: "14px",
     outline: "none",
     fontFamily: "inherit",
     direction: dir,
+    transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+    boxSizing: "border-box",
+  };
+
+  const labelStyle = {
+    display: "block",
+    fontSize: "12px",
+    fontWeight: 700,
+    color: c.textMuted,
+    marginBottom: "6px",
+    letterSpacing: isRTL ? "0" : "0.02em",
   };
 
   const contactCards = [
     {
       icon: MapPin,
-      title: t("contact.address"),
-      subtitle: t("contact.addressSubtitle"),
+      label: isRTL ? "المقر الرئيسي" : "Headquarters",
+      value: isRTL ? "محافظة البحيرة، مصر" : "Beheira Governorate, Egypt",
     },
     {
       icon: Phone,
-      title: t("contact.phone"),
-      subtitle: t("contact.phoneSubtitle"),
+      label: isRTL ? "اتصل بنا" : "Call Us",
+      value: "+20 (015) 594 777 26",
+      href: "tel:+2001559477726",
       forceLtr: true,
     },
     {
       icon: Mail,
-      title: t("contact.email_us"),
-      subtitle: t("contact.emailSubtitle"),
+      label: isRTL ? "متاح دائماً" : "For Support",
+      value: "support@tamamapp.net",
+      href: "mailto:support@tamamapp.net",
+      forceLtr: true,
     },
   ];
 
   return (
-    <div style={{ minHeight: "100vh" }}>
+    <main
+      style={{
+        minHeight: "100vh",
+        color: c.text,
+        position: "relative",
+        overflowX: "hidden",
+        background: "transparent",
+        transition: "color 0.3s ease",
+      }}
+    >
+      {/* Background Ambient Glows */}
+      <div
+        style={{
+          position: "absolute",
+          top: "5%",
+          left: isRTL ? "auto" : "10%",
+          right: isRTL ? "10%" : "auto",
+          width: "400px",
+          height: "400px",
+          borderRadius: "50%",
+          background: darkMode
+            ? "radial-gradient(circle, rgba(34,197,94,0.18) 0%, transparent 70%)"
+            : "radial-gradient(circle, rgba(34,197,94,0.15) 0%, transparent 70%)",
+          filter: "blur(60px)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: "40%",
+          right: isRTL ? "auto" : "5%",
+          left: isRTL ? "5%" : "auto",
+          width: "360px",
+          height: "360px",
+          borderRadius: "50%",
+          background: darkMode
+            ? "radial-gradient(circle, rgba(234,179,8,0.15) 0%, transparent 70%)"
+            : "radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%)",
+          filter: "blur(70px)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
       <div
         style={{
           maxWidth: "1000px",
           margin: "0 auto",
-          padding: "100px 24px 80px",
+          padding: isMobile ? "90px 20px 80px" : "120px 24px 100px",
+          position: "relative",
+          zIndex: 2,
         }}
       >
-        {/* Back Navigation */}
-        <Link
-          to="/"
+        {/* Breadcrumb Navigation */}
+        <nav
+          aria-label="Breadcrumb"
           style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            color: darkMode ? "#a1a1aa" : "#71717a",
-            textDecoration: "none",
-            fontSize: "14px",
-            fontWeight: 500,
-            marginBottom: "40px",
-            transition: "color 0.2s ease",
+            marginBottom: "36px",
             direction: dir,
+            display: "inline-block",
           }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.color = "var(--accent-500)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.color = darkMode ? "#a1a1aa" : "#71717a")
-          }
         >
-          {isRTL ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
-          <span>{t("common.back")}</span>
-        </Link>
+          <Link
+            to="/"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 16px",
+              borderRadius: "12px",
+              ...glassStyle,
+              color: c.textMuted,
+              textDecoration: "none",
+              fontSize: "14px",
+              fontWeight: 600,
+              transition: "all 0.25s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = ACCENT;
+              e.currentTarget.style.transform =
+                "translateX(isRTL ? 4px : -4px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = c.textMuted;
+              e.currentTarget.style.transform = "none";
+            }}
+          >
+            {isRTL ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
+            <span>{t("common.back") || (isRTL ? "الرئيسية" : "Home")}</span>
+          </Link>
+        </nav>
 
-        {/* Header */}
-        <div
+        {/* ========== HERO HEADER ========== */}
+        <section
           style={{
             opacity: isVisible ? 1 : 0,
-            transform: isVisible ? "translateY(0)" : "translateY(20px)",
-            transition: "all 0.6s ease",
+            transform: isVisible ? "translateY(0)" : "translateY(24px)",
+            transition: "all 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
             direction: dir,
             marginBottom: "48px",
           }}
         >
+          {/* Micro Tag */}
           <div
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              padding: "6px 16px",
-              borderRadius: "100px",
-              backgroundColor: darkMode
-                ? "rgba(34,197,94,0.12)"
-                : "rgba(34,197,94,0.08)",
-              color: "var(--accent-500)",
-              fontSize: "12px",
-              fontWeight: 600,
-              letterSpacing: isRTL ? "0" : "0.02em",
+              padding: "6px 14px",
+              borderRadius: "999px",
+              background: c.badgeBg,
+              border: `1px solid ${c.badgeBorder}`,
+              color: ACCENT,
+              fontSize: "13px",
+              fontWeight: 700,
               marginBottom: "20px",
             }}
           >
-            <Mail size={14} style={{ flexShrink: 0 }} />
+            <Mail size={14} />
             <span>{t("nav.contact")}</span>
           </div>
 
           <h1
             style={{
-              fontSize: "clamp(28px, 4vw, 40px)",
-              fontWeight: 800,
-              color: darkMode ? "#f4f4f5" : "#09090b",
-              letterSpacing: isRTL ? "0" : "-0.02em",
+              fontSize: isMobile
+                ? "clamp(32px, 8vw, 44px)"
+                : "clamp(40px, 4.4vw, 54px)",
+              fontWeight: 900,
+              letterSpacing: isRTL ? "0" : "-0.03em",
               lineHeight: 1.15,
-              marginBottom: "12px",
+              marginBottom: "16px",
+              color: c.textStrong,
+              maxWidth: "760px",
             }}
           >
             {t("contact.title")}
@@ -162,129 +297,145 @@ const Contact = () => {
 
           <p
             style={{
-              fontSize: "15px",
-              color: darkMode ? "#a1a1aa" : "#52525b",
+              fontSize: isMobile ? "15px" : "17px",
+              color: c.textMuted,
               lineHeight: 1.7,
               margin: 0,
-              maxWidth: "520px",
+              maxWidth: "620px",
+              fontWeight: 450,
             }}
           >
             {t("contact.subtitle")}
           </p>
-        </div>
+        </section>
 
-        {/* Contact Cards */}
-        <div
+        {/* ========== CONTACT CARDS ========== */}
+        <section
+          aria-label="Contact channels"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "12px",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+            gap: "18px",
             marginBottom: "48px",
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? "translateY(0)" : "translateY(16px)",
-            transition: "all 0.5s ease 0.15s",
             direction: dir,
           }}
         >
           {contactCards.map((card, i) => {
             const Icon = card.icon;
+            const Wrapper = card.href ? "a" : "div";
+            const wrapperProps = card.href
+              ? {
+                  href: card.href,
+                  onMouseEnter: (e) => {
+                    e.currentTarget.style.transform = "translateY(-4px)";
+                    e.currentTarget.style.borderColor = c.badgeBorder;
+                  },
+                  onMouseLeave: (e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.borderColor = c.border;
+                  },
+                }
+              : {};
+
             return (
-              <div
+              <Wrapper
                 key={i}
+                {...wrapperProps}
                 style={{
-                  padding: "20px",
-                  borderRadius: "16px",
-                  backgroundColor: darkMode
-                    ? "rgba(255,255,255,0.02)"
-                    : "rgba(255,255,255,0.8)",
-                  backdropFilter: "blur(20px)",
-                  border: darkMode
-                    ? "1px solid rgba(255,255,255,0.05)"
-                    : "1px solid rgba(0,0,0,0.06)",
+                  ...glassStyle,
+                  padding: "24px 20px",
+                  borderRadius: "20px",
                   display: "flex",
-                  alignItems: "flex-start",
-                  gap: "12px",
+                  alignItems: "center",
+                  gap: "14px",
+                  textDecoration: "none",
+                  color: "inherit",
+                  transition: "all 0.3s ease",
                   opacity: isVisible ? 1 : 0,
-                  transform: isVisible ? "translateY(0)" : "translateY(10px)",
-                  transition: `all 0.4s ease ${0.2 + i * 0.06}s`,
+                  transform: isVisible ? "translateY(0)" : "translateY(12px)",
+                  transitionDelay: `${0.1 + i * 0.06}s`,
                 }}
               >
                 <div
                   style={{
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "10px",
-                    backgroundColor: darkMode
-                      ? "rgba(34,197,94,0.15)"
-                      : "rgba(34,197,94,0.1)",
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "14px",
+                    background: c.badgeBg,
+                    border: `1px solid ${c.badgeBorder}`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    color: ACCENT,
                     flexShrink: 0,
-                    color: "var(--accent-500)",
                   }}
                 >
-                  <Icon size={18} />
+                  <Icon size={22} />
                 </div>
-                <div>
-                  <p
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div
                     style={{
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      color: darkMode ? "#f4f4f5" : "#18181b",
-                      marginBottom: "2px",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      color: c.textMuted,
+                      marginBottom: "4px",
+                      letterSpacing: isRTL ? "0" : "0.02em",
+                    }}
+                  >
+                    {card.label}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: 700,
+                      color: card.href ? ACCENT : c.text,
+                      wordBreak: "break-word",
+                      lineHeight: 1.4,
                       ...(card.forceLtr && {
                         direction: "ltr",
-                        textAlign: "left",
+                        textAlign: isRTL ? "right" : "left",
                         unicodeBidi: "plaintext",
                       }),
                     }}
                   >
-                    {card.title}
-                  </p>
-                  <p
-                    style={{
-                      fontSize: "11px",
-                      color: darkMode ? "#71717a" : "#a1a1aa",
-                    }}
-                  >
-                    {card.subtitle}
-                  </p>
+                    {card.value}
+                  </div>
                 </div>
-              </div>
+              </Wrapper>
             );
           })}
-        </div>
+        </section>
 
-        {/* Two Column Layout */}
-        <div
+        {/* ========== MAP + FORM ========== */}
+        <section
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: "32px",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: "24px",
             marginBottom: "60px",
             alignItems: "stretch",
+            direction: dir,
           }}
         >
           {/* Map */}
           <div
             style={{
-              borderRadius: "18px",
+              ...glassStyle,
+              padding: "10px",
+              borderRadius: "24px",
               overflow: "hidden",
-              border: darkMode
-                ? "1px solid rgba(255,255,255,0.06)"
-                : "1px solid rgba(0,0,0,0.06)",
+              minHeight: isMobile ? "300px" : "500px",
+              display: "flex",
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? "translateY(0)" : "translateY(16px)",
-              transition: "all 0.5s ease 0.35s",
-              display: "flex",
+              transition: "all 0.6s ease 0.25s",
             }}
           >
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d733225.8334748033!2d30.2410693!3d30.672428549999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14f5df170cf16483%3A0x57d476469e3f3ce5!2sBeheira%20Governorate!5e1!3m2!1sen!2seg!4v1793370947415!5m2!1sen!2seg"
               width="100%"
               height="100%"
-              style={{ border: "none", flex: 1 }}
+              style={{ border: "none", borderRadius: "16px", flex: 1 }}
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
@@ -292,57 +443,50 @@ const Contact = () => {
             />
           </div>
 
-          {/* Form */}
+          {/* Form Card */}
           <div
             style={{
+              ...glassStyle,
+              padding: isMobile ? "28px 22px" : "32px",
+              borderRadius: "24px",
+              display: "flex",
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? "translateY(0)" : "translateY(16px)",
-              transition: "all 0.5s ease 0.4s",
-              direction: dir,
-              display: "flex",
+              transition: "all 0.6s ease 0.3s",
             }}
           >
             {sent ? (
               <div
                 style={{
-                  padding: "60px 20px",
-                  textAlign: "center",
-                  borderRadius: "18px",
-                  border: darkMode
-                    ? "1px solid rgba(255,255,255,0.06)"
-                    : "1px solid rgba(0,0,0,0.06)",
-                  backgroundColor: darkMode
-                    ? "rgba(255,255,255,0.02)"
-                    : "rgba(255,255,255,0.8)",
-                  backdropFilter: "blur(20px)",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
+                  textAlign: "center",
                   flex: 1,
+                  padding: "20px 0",
                 }}
               >
                 <div
                   style={{
-                    width: "56px",
-                    height: "56px",
-                    borderRadius: "16px",
-                    backgroundColor: darkMode
-                      ? "rgba(34,197,94,0.2)"
-                      : "rgba(34,197,94,0.12)",
+                    width: "64px",
+                    height: "64px",
+                    borderRadius: "20px",
+                    background: c.badgeBg,
+                    border: `1px solid ${c.badgeBorder}`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    marginBottom: "16px",
+                    marginBottom: "20px",
                   }}
                 >
-                  <CheckCircle2 size={28} color="var(--accent-500)" />
+                  <CheckCircle2 size={30} color={ACCENT} />
                 </div>
                 <p
                   style={{
-                    fontSize: "16px",
-                    fontWeight: 700,
-                    color: darkMode ? "#f4f4f5" : "#18181b",
+                    fontSize: "17px",
+                    fontWeight: 800,
+                    color: c.textStrong,
                     marginBottom: "8px",
                   }}
                 >
@@ -351,40 +495,87 @@ const Contact = () => {
                 <p
                   style={{
                     fontSize: "14px",
-                    color: darkMode ? "#a1a1aa" : "#71717a",
+                    color: c.textMuted,
                     maxWidth: "300px",
+                    lineHeight: 1.6,
+                    marginBottom: "24px",
                   }}
                 >
                   {t("contact.successMessage")}
                 </p>
+                <button
+                  onClick={() => setSent(false)}
+                  style={{
+                    ...glassStyle,
+                    padding: "12px 24px",
+                    borderRadius: "12px",
+                    color: c.text,
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.borderColor = c.badgeBorder;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.borderColor = c.border;
+                  }}
+                >
+                  {isRTL ? "إرسال رسالة أخرى" : "Send another message"}
+                </button>
               </div>
             ) : (
               <form
                 onSubmit={handleSubmit}
-                style={{ display: "flex", flexDirection: "column", flex: 1 }}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  flex: 1,
+                  width: "100%",
+                }}
               >
-                <p
+                {/* Form header */}
+                <div
                   style={{
-                    fontSize: "14px",
-                    fontWeight: 500,
-                    color: darkMode ? "#a1a1aa" : "#71717a",
-                    marginBottom: "20px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    marginBottom: "22px",
                   }}
                 >
-                  {t("contact.formIntro")}
-                </p>
-                <div style={{ marginBottom: "14px" }}>
-                  <label
+                  <div
                     style={{
-                      display: "block",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      color: darkMode ? "#d4d4d8" : "#3f3f46",
-                      marginBottom: "6px",
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "11px",
+                      background: c.badgeBg,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
                     }}
                   >
-                    {t("contact.name")}
-                  </label>
+                    <MessageSquare size={18} color={ACCENT} />
+                  </div>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      color: c.textMuted,
+                      margin: 0,
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {t("contact.formIntro")}
+                  </p>
+                </div>
+
+                <div style={{ marginBottom: "14px" }}>
+                  <label style={labelStyle}>{t("contact.name")}</label>
                   <input
                     type="text"
                     name="name"
@@ -392,20 +583,19 @@ const Contact = () => {
                     onChange={handleChange}
                     required
                     style={inputStyle}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = ACCENT;
+                      e.target.style.boxShadow = `0 0 0 3px ${c.badgeBg}`;
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = c.border;
+                      e.target.style.boxShadow = "none";
+                    }}
                   />
                 </div>
+
                 <div style={{ marginBottom: "14px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      color: darkMode ? "#d4d4d8" : "#3f3f46",
-                      marginBottom: "6px",
-                    }}
-                  >
-                    {t("contact.email")}
-                  </label>
+                  <label style={labelStyle}>{t("contact.email")}</label>
                   <input
                     type="email"
                     name="email"
@@ -413,8 +603,17 @@ const Contact = () => {
                     onChange={handleChange}
                     required
                     style={inputStyle}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = ACCENT;
+                      e.target.style.boxShadow = `0 0 0 3px ${c.badgeBg}`;
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = c.border;
+                      e.target.style.boxShadow = "none";
+                    }}
                   />
                 </div>
+
                 <div
                   style={{
                     marginBottom: "20px",
@@ -423,30 +622,25 @@ const Contact = () => {
                     flexDirection: "column",
                   }}
                 >
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      color: darkMode ? "#d4d4d8" : "#3f3f46",
-                      marginBottom: "6px",
-                    }}
-                  >
-                    {t("contact.message")}
-                  </label>
+                  <label style={labelStyle}>{t("contact.message")}</label>
                   <textarea
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
                     required
                     rows={5}
-                    style={{
-                      ...inputStyle,
-                      resize: "vertical",
-                      flex: 1,
+                    style={{ ...inputStyle, resize: "vertical", flex: 1 }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = ACCENT;
+                      e.target.style.boxShadow = `0 0 0 3px ${c.badgeBg}`;
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = c.border;
+                      e.target.style.boxShadow = "none";
                     }}
                   />
                 </div>
+
                 <button
                   type="submit"
                   style={{
@@ -454,27 +648,28 @@ const Contact = () => {
                     display: "inline-flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    gap: "8px",
-                    padding: "14px 24px",
+                    gap: "10px",
+                    padding: "15px 24px",
                     borderRadius: "14px",
-                    backgroundColor: "var(--accent-500)",
+                    background: `linear-gradient(135deg, ${ACCENT} 0%, #16a34a 100%)`,
                     color: "#ffffff",
                     fontSize: "15px",
-                    fontWeight: 600,
+                    fontWeight: 700,
                     border: "none",
                     cursor: "pointer",
-                    transition: "all 0.2s ease",
-                    flexShrink: 0,
+                    fontFamily: "inherit",
+                    boxShadow: "0 10px 25px rgba(34,197,94,0.35)",
+                    transition: "all 0.25s ease",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = darkMode
-                      ? "0 8px 24px rgba(34,197,94,0.3)"
-                      : "0 8px 24px rgba(34,197,94,0.2)";
+                    e.currentTarget.style.boxShadow =
+                      "0 16px 35px rgba(34,197,94,0.45)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.boxShadow =
+                      "0 10px 25px rgba(34,197,94,0.35)";
                   }}
                 >
                   <Send size={16} />
@@ -483,25 +678,23 @@ const Contact = () => {
               </form>
             )}
           </div>
-        </div>
+        </section>
 
         {/* Divider */}
         <div
           style={{
             height: "1px",
-            backgroundColor: darkMode
-              ? "rgba(255,255,255,0.06)"
-              : "rgba(0,0,0,0.06)",
+            background: c.border,
             margin: "0 0 32px",
           }}
         />
 
-        {/* FAQ Link */}
+        {/* ========== FAQ LINK ========== */}
         <div style={{ textAlign: "center", direction: dir }}>
           <p
             style={{
               fontSize: "14px",
-              color: darkMode ? "#a1a1aa" : "#71717a",
+              color: c.textMuted,
               marginBottom: "16px",
             }}
           >
@@ -510,35 +703,33 @@ const Contact = () => {
           <Link
             to="/faq"
             style={{
+              ...glassStyle,
               display: "inline-flex",
               alignItems: "center",
               gap: "10px",
               padding: "14px 28px",
               borderRadius: "14px",
-              backgroundColor: "var(--accent-500)",
-              color: "#ffffff",
+              color: c.text,
               textDecoration: "none",
               fontSize: "15px",
-              fontWeight: 600,
-              transition: "all 0.2s ease",
+              fontWeight: 700,
+              transition: "all 0.25s ease",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = darkMode
-                ? "0 8px 24px rgba(34,197,94,0.3)"
-                : "0 8px 24px rgba(34,197,94,0.2)";
+              e.currentTarget.style.borderColor = c.badgeBorder;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "none";
+              e.currentTarget.style.borderColor = c.border;
             }}
           >
-            <Mail size={18} />
+            <Mail size={18} color={ACCENT} />
             <span>{t("faq.title")}</span>
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 
