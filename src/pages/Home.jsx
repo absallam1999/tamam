@@ -443,8 +443,8 @@ const Home = () => {
                 }}
               >
                 {isRTL
-                  ? "منصتك الموحدة للمطاعم الفاخرة، مقاضي السوبرماركت، وصيدليات الطوارئ بأعلى معايير الدقة والسرعة."
-                  : "Hyper-local ordering for elite restaurants, daily fresh groceries, and pharmacy emergencies with precision real-time tracking."}
+                  ? "منصتك الموحدة للمطاعم القريبة، مقاضي السوبرماركت، وصيدليات الطوارئ بأعلى معايير الدقة والسرعة."
+                  : "Hyper-local ordering for local restaurants, daily fresh groceries, and pharmacy emergencies with precision real-time tracking."}
               </p>
 
               {/* CTA bar */}
