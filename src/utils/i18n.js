@@ -455,11 +455,11 @@ const resources = {
         success: "Message sent successfully!",
         error: "Failed to send. Please try again.",
         address: "Beheira Governorate, Egypt",
-        phone: "+1 (234) 567-8900",
+        phone: "+20 (015) 594 777 26",
         email_us: "support@tamamapp.net",
-        hours: "Sat–Fri: 9am–8pm",
+        hours: "Sat–Fri: 9am–12pm",
         addressSubtitle: "Visit our office",
-        phoneSubtitle: "Sat–Fri: 9am–8pm",
+        phoneSubtitle: "Sat–Fri: 9am–12pm",
         emailSubtitle: "We reply within 2 hours",
       },
 
@@ -468,7 +468,7 @@ const resources = {
         badge: "Privacy Policy",
         title:
           "Comprehensive Privacy Policy for Tamam Applications & Platforms",
-        lastUpdated: "Effective Date: July, 2026",
+        lastUpdated: "Effective Date: October, 2026",
         contactEmail: "Privacy & Data Protection Email",
         deleteAccount: "Direct Account Deletion Link",
         questions:
@@ -533,7 +533,7 @@ const resources = {
       // ========== TERMS OF SERVICE PAGE ==========
       terms: {
         title: "Terms of Service",
-        lastUpdated: "Last Updated: July 2026",
+        lastUpdated: "Last Updated: October 2026",
         intro:
           "By downloading, accessing, or using TamamApp, you agree to be bound by these Terms of Service. Please read them carefully before using our delivery services across Egypt.",
         contents: "Contents",
@@ -570,7 +570,7 @@ const resources = {
         termination: {
           title: "Termination of Service",
           content:
-            "We reserve the right to suspend or terminate your account at any time without prior notice for violations of these terms or applicable Egyptian laws. We may also temporarily suspend services for maintenance or updates. You may delete your account at any time through the app settings.",
+            "We reserve the right to suspend or terminate your account at any time without prior notice for violations of these terms or applicable Egyptian laws. We may also temporarily suspend services for maintenance or updates. You may delete your account at any time through the app settings or by contacting us at (tamamapp.net/contact).",
         },
         liability: {
           title: "Limitation of Liability",
@@ -582,7 +582,7 @@ const resources = {
       // ========== COOKIE POLICY PAGE ==========
       cookies: {
         title: "Cookie Policy",
-        lastUpdated: "Last Updated: July 2026",
+        lastUpdated: "Last Updated: October 2026",
         intro:
           "This policy explains how we use cookies and similar technologies.",
         what: {
@@ -657,7 +657,7 @@ const resources = {
         stillHaveQuestions: "Still have questions?",
         contactSupport: "Contact our support team",
         supportEmail: "support@tamamapp.net",
-        supportPhone: "+1 (234) 567-8900",
+        supportPhone: "+20 (015) 594 777 26",
         liveChat: "Live Chat",
         noResults: "No results found",
         tryDifferent: "Try different keywords or browse categories below",
@@ -666,7 +666,7 @@ const resources = {
       // ========== GDPR PAGE ==========
       gdpr: {
         title: "GDPR Compliance",
-        lastUpdated: "Last Updated: July 2026",
+        lastUpdated: "Last Updated: October 2026",
         intro:
           "We are committed to protecting your data and complying with the General Data Protection Regulation (GDPR).",
         rights: {
@@ -1162,11 +1162,11 @@ const resources = {
         success: "تم إرسال الرسالة بنجاح!",
         error: "فشل الإرسال. حاول مرة أخرى.",
         address: "محافظة البحيرة, مصر",
-        phone: "+1 (234) 567-8900",
+        phone: "+20 (015) 594 777 26",
         email_us: "support@tamamapp.net",
-        hours: "السبت–الجمعة: 9ص–8م",
+        hours: "السبت–الجمعة: 9ص–12م",
         addressSubtitle: "قم بزيارة مكتبنا",
-        phoneSubtitle: "السبت–الجمعة: 9ص–8م",
+        phoneSubtitle: "السبت–الجمعة: 9ص–12م",
         emailSubtitle: "نرد خلال 2 ساعة",
       },
 
@@ -1174,7 +1174,7 @@ const resources = {
       privacy: {
         badge: "سياسة الخصوصية",
         title: 'سياسة الخصوصية الشاملة لمنظومة تطبيقات ومنصات "تمام" (Tamam)',
-        lastUpdated: "تاريخ سريان العمل: يوليو 2026",
+        lastUpdated: "تاريخ سريان العمل: أكتوبر 2026",
         contactEmail: "البريد الإلكتروني المخصص للخصوصية وحماية البيانات",
         deleteAccount: "رابط طلب حذف الحساب المباشر",
         questions: "هل لديك أسئلة حول بياناتك؟ تواصل مع مسؤول حماية البيانات.",
@@ -1238,7 +1238,7 @@ const resources = {
       // ========== TERMS OF SERVICE PAGE ==========
       terms: {
         title: "شروط الخدمة",
-        lastUpdated: "آخر تحديث: يوليو 2026",
+        lastUpdated: "آخر تحديث: أكتوبر 2026",
         intro:
           "بتحميلكم أو استخدامكم لتطبيق تمام، فإنكم توافقون على الالتزام بشروط الخدمة هذه. يرجى قراءتها بعناية قبل استخدام خدمات التوصيل الخاصة بنا في جميع أنحاء مصر.",
         contents: "المحتويات",
@@ -1275,7 +1275,7 @@ const resources = {
         termination: {
           title: "إنهاء الخدمة",
           content:
-            "نحتفظ بالحق في تعليق أو إنهاء حسابكم في أي وقت بدون إشعار مسبق في حالة مخالفة هذه الشروط أو القوانين المصرية. يمكن أيضاً إيقاف الخدمة بشكل مؤقت للصيانة أو التحديثات. يمكنكم حذف حسابكم في أي وقت من خلال إعدادات التطبيق.",
+            "نحتفظ بالحق في تعليق أو إنهاء حسابكم في أي وقت بدون إشعار مسبق في حالة مخالفة هذه الشروط أو القوانين المصرية. يمكن أيضاً إيقاف الخدمة بشكل مؤقت للصيانة أو التحديثات. يمكنكم حذف حسابكم في أي وقت من خلال إعدادات التطبيق او من خلال الرابط (tamamapp.net/contact).",
         },
         liability: {
           title: "حدود المسؤولية",
@@ -1286,7 +1286,7 @@ const resources = {
       // ========== COOKIE POLICY PAGE ==========
       cookies: {
         title: "سياسة ملفات التعريف",
-        lastUpdated: "آخر تحديث: يوليو 2026",
+        lastUpdated: "آخر تحديث: أكتوبر 2026",
         intro:
           "تشرح هذه السياسة كيفية استخدامنا لملفات التعريف والتقنيات المشابهة.",
         what: {
@@ -1362,7 +1362,7 @@ const resources = {
         stillHaveQuestions: "لا تزال لديك أسئلة؟",
         contactSupport: "اتصل بفريق الدعم",
         supportEmail: "support@tamamapp.net",
-        supportPhone: "+1 (234) 567-8900",
+        supportPhone: "+20 (015) 594 777 26",
         liveChat: "محادثة مباشرة",
         noResults: "لم يتم العثور على نتائج",
         tryDifferent: "جرب كلمات بحث مختلفة أو تصفح الفئات أدناه",
@@ -1371,7 +1371,7 @@ const resources = {
       // ========== GDPR PAGE ==========
       gdpr: {
         title: "الامتثال للائحة العامة",
-        lastUpdated: "آخر تحديث: يوليو 2026",
+        lastUpdated: "آخر تحديث: أكتوبر 2026",
         intro:
           "نحن ملتزمون بحماية بياناتك والامتثال للائحة العامة لحماية البيانات (GDPR).",
         rights: {

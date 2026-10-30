@@ -17,7 +17,7 @@ const Footer = () => {
   const socialLinks = [
     {
       label: "Facebook",
-      href: "#",
+      href: "https://www.facebook.com/tamamappnet",
       color: "#22c55e",
       icon: (
         <svg
@@ -32,8 +32,8 @@ const Footer = () => {
       ),
     },
     {
-      label: "Twitter",
-      href: "#",
+      label: "TikTok",
+      href: "https://www.tiktok.com/@tamamappnet",
       color: "#22c55e",
       icon: (
         <svg
@@ -43,13 +43,13 @@ const Footer = () => {
           viewBox="0 0 24 24"
           aria-hidden="true"
         >
-          <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" />
+          <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001.002.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.329 6.329 0 0 0-5.394 10.692 6.33 6.33 0 0 0 10.857-4.424V8.687a8.182 8.182 0 0 0 4.773 1.526V6.79a4.831 4.831 0 0 1-1.003-.104z" />
         </svg>
       ),
     },
     {
       label: "Instagram",
-      href: "#",
+      href: "https://www.instagram.com/tamamappnet",
       color: "#22c55e",
       icon: (
         <svg
@@ -65,7 +65,7 @@ const Footer = () => {
     },
     {
       label: "LinkedIn",
-      href: "#",
+      href: "https://www.linkedin.com/company/tamamappnet",
       color: "#22c55e",
       icon: (
         <svg
