@@ -179,7 +179,7 @@ const resources = {
           title: "Order Anything, Anytime",
           description:
             "Browse thousands of restaurants and stores, track your orders in real-time, and enjoy fast delivery right to your doorstep.",
-          ratingText: "• 20k+ Downloads • 400+ Daily Orders",
+          ratingText: "• 20k+ Downloads • 250+ Daily Orders",
           downloadAppStore: "Download on the",
           appStore: "App Store",
           getItOn: "GET IT ON",
@@ -888,7 +888,7 @@ const resources = {
           title: "اطلب أي شيء، في أي وقت",
           description:
             "تصفح آلاف المطاعم والمتاجر، وتتبع طلباتك في الوقت الفعلي، واستمتع بالتوصيل السريع إلى باب منزلك.",
-          ratingText: "• 20k+ تحميل • 400+ طلب يومي",
+          ratingText: "• 20k+ تحميل • 250+ طلب يومي",
           downloadAppStore: "حمّل من",
           appStore: "App Store",
           getItOn: "حمّل من",
