@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
-  Shield,
+  Info,
   Mail,
+  Shield,
   ArrowRight,
   ArrowLeft,
   Lock,
@@ -104,7 +105,7 @@ const GDPR = () => {
               marginBottom: "20px",
             }}
           >
-            <Shield size={14} style={{ flexShrink: 0 }} />
+            <Info size={14} style={{ flexShrink: 0 }} />
             <span>{t("nav.gdpr")}</span>
           </div>
 

@@ -80,29 +80,55 @@ const Stores = () => {
             marginBottom: "clamp(32px, 5vw, 48px)",
           }}
         >
-          <Link
-            to="/"
+          {/* Back to Home */}
+          <div style={{ marginBottom: "clamp(16px, 2vw, 24px)" }}>
+            <Link
+              to="/"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "clamp(6px, 1vw, 8px)",
+                color: darkMode ? "#a1a1aa" : "#71717a",
+                textDecoration: "none",
+                fontSize: "clamp(13px, 1.5vw, 14px)",
+                fontWeight: 500,
+                transition: "color 0.2s ease",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.color = "var(--accent-500)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.color = darkMode ? "#a1a1aa" : "#71717a")
+              }
+            >
+              {isRTL ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
+              <span>{isRTL ? "العودة للرئيسية" : "Back to Home"}</span>
+            </Link>
+          </div>
+
+          {/* Micro Tag */}
+          <div
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "clamp(6px, 1vw, 8px)",
-              color: darkMode ? "#a1a1aa" : "#71717a",
-              textDecoration: "none",
-              fontSize: "clamp(13px, 1.5vw, 14px)",
-              fontWeight: 500,
-              marginBottom: "clamp(16px, 2vw, 24px)",
-              transition: "color 0.2s ease",
+              gap: "8px",
+              padding: "6px 14px",
+              borderRadius: "999px",
+              backgroundColor: darkMode
+                ? "rgba(34,197,94,0.12)"
+                : "rgba(34,197,94,0.08)",
+              border: darkMode
+                ? "1px solid rgba(34,197,94,0.28)"
+                : "1px solid rgba(34,197,94,0.22)",
+              color: "var(--accent-500)",
+              fontSize: "13px",
+              fontWeight: 700,
+              marginBottom: "clamp(12px, 1.5vw, 16px)",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.color = "var(--accent-500)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.color = darkMode ? "#a1a1aa" : "#71717a")
-            }
           >
-            {isRTL ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
-            <span>{isRTL ? "العودة للرئيسية" : "Back to Home"}</span>
-          </Link>
+            <Store size={14} />
+            <span>{isRTL ? "المتاجر المعتمدة" : "Verified Outlets"}</span>
+          </div>
 
           <h1
             style={{
