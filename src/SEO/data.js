@@ -1,3 +1,7 @@
+/**
+ * SEO defaults per route.
+ * Placeholders in `{curlyBraces}` are runtime-overridable via <SEO {...} />.
+ */
 export const seoData = {
   home: {
     title: "Fast, Secure & Reliable Delivery Service in Egypt",

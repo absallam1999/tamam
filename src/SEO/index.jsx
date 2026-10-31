@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+/**
+ * <SEO /> — imperative meta-tag manager.
+ */
 const SEO = ({
   title,
   description,
@@ -12,18 +15,29 @@ const SEO = ({
 }) => {
   const location = useLocation();
   const siteName = "Tamam App";
-  const baseUrl = window.location.origin;
-  const currentUrl = canonicalUrl || `${baseUrl}${location.pathname}`;
+  const baseUrl =
+    typeof window !== "undefined" ? window.location.origin : "";
+  const currentUrl =
+    canonicalUrl || `${baseUrl}${location.pathname || ""}`;
 
   useEffect(() => {
-    // Set document title
-    document.title = title ? `${title} | ${siteName}` : siteName;
+    if (typeof document === "undefined") return;
 
-    // Helper to set or update meta tags
+    // ── <title> — avoid double "| Tamam App" ──
+    const brandSuffix = ` | ${siteName}`;
+    document.title = title
+      ? title.includes(siteName)
+        ? title
+        : `${title}${brandSuffix}`
+      : siteName;
+
+    // ── helpers ──
     const setMetaTag = (name, content, isProperty = false) => {
-      if (!content) return;
+      if (content == null || content === "") return;
       const attribute = isProperty ? "property" : "name";
-      let element = document.querySelector(`meta[${attribute}="${name}"]`);
+      let element = document.querySelector(
+        `meta[${attribute}="${name}"]`,
+      );
       if (!element) {
         element = document.createElement("meta");
         element.setAttribute(attribute, name);
@@ -32,75 +46,78 @@ const SEO = ({
       element.setAttribute("content", content);
     };
 
-    // Helper to remove meta tag
     const removeMetaTag = (name, isProperty = false) => {
       const attribute = isProperty ? "property" : "name";
-      const element = document.querySelector(`meta[${attribute}="${name}"]`);
-      if (element) {
-        element.remove();
-      }
+      const element = document.querySelector(
+        `meta[${attribute}="${name}"]`,
+      );
+      if (element) element.remove();
     };
 
-    // Set link tags
-    const setLinkTag = (rel, href) => {
+    const setLinkTag = (rel, href, extraAttrs = {}) => {
       if (!href) return;
-      let element = document.querySelector(`link[rel="${rel}"]`);
+      const selector = extraAttrs.hreflang
+        ? `link[rel="${rel}"][hreflang="${extraAttrs.hreflang}"]`
+        : `link[rel="${rel}"]`;
+      let element = document.querySelector(selector);
       if (!element) {
         element = document.createElement("link");
         element.setAttribute("rel", rel);
+        Object.entries(extraAttrs).forEach(([k, v]) =>
+          element.setAttribute(k, v),
+        );
         document.head.appendChild(element);
       }
       element.setAttribute("href", href);
     };
 
-    // Basic Meta Tags
+    // ── basic meta ──
     setMetaTag("description", description);
+    if (keywords) setMetaTag("keywords", keywords);
+    else removeMetaTag("keywords");
 
-    if (keywords) {
-      setMetaTag("keywords", keywords);
-    } else {
-      removeMetaTag("keywords");
-    }
+    // ── robots ──
+    setMetaTag(
+      "robots",
+      noIndex ? "noindex, nofollow" : "index, follow",
+    );
 
-    // Robots
-    if (noIndex) {
-      setMetaTag("robots", "noindex, nofollow");
-    } else {
-      setMetaTag("robots", "index, follow");
-    }
-
-    // Open Graph Tags
+    // ── Open Graph ──
     setMetaTag("og:title", title || siteName, true);
     setMetaTag("og:description", description, true);
     setMetaTag("og:type", ogType, true);
     setMetaTag("og:url", currentUrl, true);
     setMetaTag("og:site_name", siteName, true);
+    setMetaTag(
+      "og:image",
+      ogImage || `${baseUrl}/social/og-image.png`,
+      true,
+    );
+    const lang =
+      (typeof document !== "undefined" &&
+        document.documentElement.lang) ||
+      "en";
+    setMetaTag("og:locale", lang === "ar" ? "ar_EG" : "en_US", true);
+    setMetaTag(
+      "og:locale:alternate",
+      lang === "ar" ? "en_US" : "ar_EG",
+      true,
+    );
 
-    if (ogImage) {
-      setMetaTag("og:image", ogImage, true);
-    } else {
-      setMetaTag("og:image", `${baseUrl}/social/og-image.png`, true); // Default OG image
-    }
-
-    // Twitter Card Tags
+    // ── Twitter / X ──
     setMetaTag("twitter:card", "summary_large_image");
     setMetaTag("twitter:title", title || siteName);
     setMetaTag("twitter:description", description);
-    if (ogImage) {
-      setMetaTag("twitter:image", ogImage);
-    }
+    setMetaTag(
+      "twitter:image",
+      ogImage || `${baseUrl}/social/og-image.png`,
+    );
 
-    // Canonical URL
+    // ── canonical ──
     setLinkTag("canonical", currentUrl);
 
-    // Language alternates (if you have multiple languages)
-    // Uncomment and modify if needed:
-    // const lang = document.documentElement.lang || "en";
-    // setLinkTag("alternate", `${baseUrl}/ar${location.pathname}`);
-    // setMetaTag("og:locale", lang === "ar" ? "ar_EG" : "en_US", true);
-
     return () => {
-      // Cleanup (optional - usually not needed as next page will override)
+      // No cleanup — the next <SEO /> that mounts will overwrite.
     };
   }, [
     title,
@@ -111,12 +128,10 @@ const SEO = ({
     canonicalUrl,
     noIndex,
     location.pathname,
-    baseUrl,
-    siteName,
     currentUrl,
   ]);
 
-  return null; // This component doesn't render anything
+  return null;
 };
 
 export default SEO;

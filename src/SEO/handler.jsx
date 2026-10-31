@@ -1,52 +1,80 @@
 import React, { useMemo } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import SEO from "./index";
 import { seoData } from "./data";
 
 const SEOHandler = ({ storeData = null }) => {
   const location = useLocation();
-  const params = useParams();
 
   const seoProps = useMemo(() => {
     const path = location.pathname;
 
-    // Home page
-    if (path === "/") return seoData.home;
-
-    // Static routes
-    if (path === "/about") return seoData.about;
-    if (path === "/stores") return seoData.stores;
-    if (path === "/apps") return seoData.apps;
-    if (path === "/apps/customer" || path === "/download")
-      return seoData.customerApp;
-    if (path === "/apps/courier") return seoData.courierApp;
-    if (path === "/apps/store") return seoData.storeApp;
-    if (path === "/apps/fleet") return seoData.fleetApp;
-    if (path === "/partnership") return seoData.partnership;
-    if (path === "/contact") return seoData.contact;
-    if (path === "/privacy") return seoData.privacy;
-    if (path === "/terms") return seoData.terms;
-    if (path === "/cookies") return seoData.cookies;
-    if (path === "/gdpr") return seoData.gdpr;
-    if (path === "/faq") return seoData.faq;
-
-    // Dynamic store detail page
-    if (path.startsWith("/stores/") && storeData) {
-      const storeName = storeData.nameEn || storeData.nameAr || "Store";
-      return {
-        title: `${storeName} - Order Online`,
-        description:
-          storeData.descriptionEn ||
-          storeData.descriptionAr ||
-          `Order from ${storeName}. Check menu, delivery time, and more.`,
-        keywords: `${storeName.toLowerCase()}, store, delivery, order online${
-          storeData.city ? `, ${storeData.city}` : ""
-        }`,
-        ogType: "website",
-      };
+    // ── static routes ────────────────────────────────────
+    switch (path) {
+      case "/":
+        return seoData.home;
+      case "/about":
+        return seoData.about;
+      case "/stores":
+        return seoData.stores;
+      case "/apps":
+        return seoData.apps;
+      case "/apps/customer":
+      case "/download":
+        return seoData.customerApp;
+      case "/apps/courier":
+        return seoData.courierApp;
+      case "/apps/store":
+        return seoData.storeApp;
+      case "/apps/fleet":
+        return seoData.fleetApp;
+      case "/partnership":
+        return seoData.partnership;
+      case "/contact":
+        return seoData.contact;
+      case "/privacy":
+        return seoData.privacy;
+      case "/terms":
+        return seoData.terms;
+      case "/cookies":
+        return seoData.cookies;
+      case "/gdpr":
+        return seoData.gdpr;
+      case "/faq":
+        return seoData.faq;
     }
 
-    // Default fallback
+    // ── dynamic: store detail ────────────────────────────
+    if (path.startsWith("/stores/")) {
+      if (storeData) {
+        const storeName =
+          storeData.nameEn || storeData.nameAr || "Store";
+        const description =
+          storeData.descriptionEn ||
+          storeData.descriptionAr ||
+          `Order from ${storeName}. Check menu, delivery time, and more.`;
+        const keywords = [
+          storeName.toLowerCase(),
+          "store",
+          "delivery",
+          "order online",
+          storeData.city,
+        ]
+          .filter(Boolean)
+          .join(", ");
+        return {
+          title: `${storeName}`,
+          description,
+          keywords,
+          ogType: "website",
+          ogImage: storeData.coverUrl || undefined,
+        };
+      }
+      // No data yet
+      return seoData.storeDetail;
+    }
+
+    // ── fallback ─────────────────────────────────────────
     return seoData.notFound;
   }, [location.pathname, storeData]);
 

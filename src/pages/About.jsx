@@ -93,7 +93,7 @@ const About = () => {
   const dir = isRTL ? "rtl" : "ltr";
   const c = darkMode ? TOKENS.dark : TOKENS.light;
 
-  // Glass surface token — identical to Home.jsx
+  // Glass surface token
   const glassStyle = {
     background: c.surfaceGradient,
     backdropFilter: "blur(20px)",
@@ -273,8 +273,9 @@ const About = () => {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = ACCENT;
-              e.currentTarget.style.transform =
-                "translateX(isRTL ? 4px : -4px)";
+              e.currentTarget.style.transform = `translateX(${
+                isRTL ? 4 : -4
+              }px)`;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.color = c.textMuted;
@@ -296,7 +297,7 @@ const About = () => {
             marginBottom: "70px",
           }}
         >
-          {/* Micro Tag */}
+          {/* Badge */}
           <div
             style={{
               display: "inline-flex",
@@ -551,8 +552,8 @@ const About = () => {
                     }}
                   >
                     {isRTL
-                      ? "الكثير من الشركاء المعتمدين"
-                      : "100+ Certified Merchants"}
+                      ? "المئات من الشركاء المعتمدين"
+                      : "500+ Certified Merchants"}
                   </div>
                   <div style={{ fontSize: "13px", color: c.textMuted }}>
                     {isRTL
@@ -829,127 +830,129 @@ const About = () => {
         </section>
 
         {/* ========== LOCATION & CONTACT PILL ========== */}
-  <section
-  style={{
-    ...glassStyle,
-    padding: "24px 32px",
-    borderRadius: "24px",
-    marginBottom: "70px",
-    direction: dir,
-  }}
->
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-      gap: "20px",
-      alignItems: "center",
-    }}
-  >
-    {/* Headquarters */}
-    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-      <div
-        style={{
-          width: "40px",
-          height: "40px",
-          borderRadius: "12px",
-          background: c.badgeBg,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        <MapPin size={20} color={ACCENT} />
-      </div>
-      <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: "12px", color: c.textMuted }}>
-          {isRTL ? "المقر الرئيسي" : "Headquarters"}
-        </div>
-        <div
+        <section
           style={{
-            fontSize: "14px",
-            fontWeight: 700,
-            color: c.text,
+            ...glassStyle,
+            padding: "24px 32px",
+            borderRadius: "24px",
+            marginBottom: "70px",
+            direction: dir,
           }}
         >
-          {isRTL ? "محافظة البحيرة، جمهورية مصر العربية" : "Beheira Governorate, Egypt"}
-        </div>
-      </div>
-    </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+              gap: "20px",
+              alignItems: "center",
+            }}
+          >
+            {/* Headquarters */}
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "12px",
+                  background: c.badgeBg,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <MapPin size={20} color={ACCENT} />
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: "12px", color: c.textMuted }}>
+                  {isRTL ? "المقر الرئيسي" : "Headquarters"}
+                </div>
+                <div
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: c.text,
+                  }}
+                >
+                  {isRTL
+                    ? "محافظة البحيرة، جمهورية مصر العربية"
+                    : "Beheira Governorate, Egypt"}
+                </div>
+              </div>
+            </div>
 
-    {/* Inquiries & Support */}
-    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-      <div
-        style={{
-          width: "40px",
-          height: "40px",
-          borderRadius: "12px",
-          background: c.badgeBg,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        <Mail size={20} color={ACCENT} />
-      </div>
-      <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: "12px", color: c.textMuted }}>
-          {isRTL ? "البريد الرسمي" : "For Inquiries"}
-        </div>
-        <a
-          href="mailto:contact@tamamapp.net"
-          style={{
-            fontSize: "14px",
-            fontWeight: 700,
-            color: ACCENT,
-            textDecoration: "none",
-            wordBreak: "break-word",
-          }}
-        >
-          contact@tamamapp.net
-        </a>
-      </div>
-    </div>
+            {/* Inquiries & Support */}
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "12px",
+                  background: c.badgeBg,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <Mail size={20} color={ACCENT} />
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: "12px", color: c.textMuted }}>
+                  {isRTL ? "البريد الرسمي" : "For Inquiries"}
+                </div>
+                <a
+                  href="mailto:contact@tamamapp.net"
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: ACCENT,
+                    textDecoration: "none",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  contact@tamamapp.net
+                </a>
+              </div>
+            </div>
 
-    {/* Phone */}
-    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-      <div
-        style={{
-          width: "40px",
-          height: "40px",
-          borderRadius: "12px",
-          background: c.badgeBg,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        <Phone size={20} color={ACCENT} />
-      </div>
-      <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: "12px", color: c.textMuted }}>
-          {isRTL ? "اتصل بنا" : "Call Us"}
-        </div>
-        <a
-          href="tel:+2001559477726"
-          dir="ltr"
-          style={{
-            fontSize: "14px",
-            fontWeight: 700,
-            color: ACCENT,
-            textDecoration: "none",
-            display: "inline-block",
-          }}
-        >
-          +20 (015) 594 777 26
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
+            {/* Phone */}
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "12px",
+                  background: c.badgeBg,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <Phone size={20} color={ACCENT} />
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: "12px", color: c.textMuted }}>
+                  {isRTL ? "اتصل بنا" : "Call Us"}
+                </div>
+                <a
+                  href="tel:+2001559477726"
+                  dir="ltr"
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: ACCENT,
+                    textDecoration: "none",
+                    display: "inline-block",
+                  }}
+                >
+                  +20 (015) 594 777 26
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* ========== CTA BANNER ========== */}
         <section

@@ -13,6 +13,47 @@ import {
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LangContext";
 
+/* =========================================================
+   SHARED DESIGN TOKENS
+   ========================================================= */
+const TOKENS = {
+  dark: {
+    text: "#f4f4f5", // zinc-100
+    textStrong: "#fafafa", // zinc-50
+    textMuted: "#a1a1aa", // zinc-400
+    textFaint: "#71717a", // zinc-500
+    border: "rgba(255,255,255,0.06)",
+    borderStrong: "rgba(255,255,255,0.10)",
+    surface: "rgba(24, 24, 27, 0.72)",
+    surfaceGradient:
+      "linear-gradient(135deg, rgba(24,24,27,0.72) 0%, rgba(15,15,17,0.60) 100%)",
+    surfaceSolid: "#18181b",
+    badgeBg: "rgba(34,197,94,0.12)",
+    badgeBorder: "rgba(34,197,94,0.28)",
+    chipBg: "rgba(255,255,255,0.03)",
+    shadow:
+      "0 20px 50px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.05)",
+  },
+  light: {
+    text: "#18181b",
+    textStrong: "#09090b",
+    textMuted: "#52525b",
+    textFaint: "#71717a",
+    border: "rgba(0,0,0,0.06)",
+    borderStrong: "rgba(0,0,0,0.10)",
+    surface: "rgba(255,255,255,0.85)",
+    surfaceGradient:
+      "linear-gradient(135deg, rgba(255,255,255,0.90) 0%, rgba(250,250,250,0.75) 100%)",
+    surfaceSolid: "#ffffff",
+    badgeBg: "rgba(34,197,94,0.08)",
+    badgeBorder: "rgba(34,197,94,0.22)",
+    chipBg: "rgba(0,0,0,0.02)",
+    shadow: "0 20px 50px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)",
+  },
+};
+
+const ACCENT = "var(--accent-500, #22c55e)";
+
 const Cookies = () => {
   const { darkMode } = useTheme();
   const { isRTL } = useLanguage();
@@ -30,6 +71,13 @@ const Cookies = () => {
   }, [isRTL]);
 
   const dir = isRTL ? "rtl" : "ltr";
+  const c = darkMode ? TOKENS.dark : TOKENS.light;
+
+  // Glass surface token
+  const glassStyle = {
+    background: c.surfaceGradient,
+    border: `1px solid ${c.border}`,
+  };
 
   const sections = ["what", "how", "manage"];
 
@@ -67,30 +115,44 @@ const Cookies = () => {
         }}
       >
         {/* Back Navigation */}
-        <Link
-          to="/"
+        <nav
+          aria-label="Breadcrumb"
           style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            color: darkMode ? "#a1a1aa" : "#71717a",
-            textDecoration: "none",
-            fontSize: "14px",
-            fontWeight: 500,
-            marginBottom: "40px",
-            transition: "color 0.2s ease",
+            marginBottom: "36px",
             direction: dir,
+            display: "inline-block",
           }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.color = "var(--accent-500)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.color = darkMode ? "#a1a1aa" : "#71717a")
-          }
         >
-          {isRTL ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
-          <span>{t("common.back")}</span>
-        </Link>
+          <Link
+            to="/"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 16px",
+              borderRadius: "12px",
+              ...glassStyle,
+              color: c.textMuted,
+              textDecoration: "none",
+              fontSize: "14px",
+              fontWeight: 600,
+              transition: "all 0.25s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = ACCENT;
+              e.currentTarget.style.transform = `translateX(${
+                isRTL ? 4 : -4
+              }px)`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = c.textMuted;
+              e.currentTarget.style.transform = "none";
+            }}
+          >
+            {isRTL ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
+            <span>{t("common.back") || (isRTL ? "الرئيسية" : "Home")}</span>
+          </Link>
+        </nav>
 
         {/* Header */}
         <div
@@ -108,15 +170,13 @@ const Cookies = () => {
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              padding: "6px 16px",
-              borderRadius: "100px",
-              backgroundColor: darkMode
-                ? "rgba(34,197,94,0.12)"
-                : "rgba(34,197,94,0.08)",
-              color: "var(--accent-500)",
-              fontSize: "12px",
-              fontWeight: 600,
-              letterSpacing: isRTL ? "0" : "0.02em",
+              padding: "6px 14px",
+              borderRadius: "999px",
+              background: c.badgeBg,
+              border: `1px solid ${c.badgeBorder}`,
+              color: ACCENT,
+              fontSize: "13px",
+              fontWeight: 700,
               marginBottom: "20px",
             }}
           >

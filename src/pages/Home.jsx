@@ -831,6 +831,7 @@ const Home = () => {
           zIndex: 4,
         }}
       >
+        {/* ─── HEADER (with View All) ─── */}
         <div
           style={{
             display: "flex",
@@ -867,9 +868,40 @@ const Home = () => {
               {isRTL ? "استكشف المطاعم والمتاجر" : "Browse Stores In Your Area"}
             </h2>
           </div>
+
+          {/* View All */}
+          {!storesLoading && !storesError && stores.length > 0 && (
+            <Link
+              to="/stores"
+              className="view-all-btn"
+              style={{
+                ...glassStyle,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "11px 20px",
+                borderRadius: "14px",
+                color: c.text,
+                textDecoration: "none",
+                fontSize: "14px",
+                fontWeight: 600,
+                flexShrink: 0,
+                transition: "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = `translateY(-2px)`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "none";
+              }}
+            >
+              <span>{isRTL ? "عرض جميع المتاجر" : "View All Stores"}</span>
+              {isRTL ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+            </Link>
+          )}
         </div>
 
-        {/* Search & Filter Bar */}
+        {/* ─── SEARCH & FILTER BAR ─── */}
         <div
           style={{
             ...glassStyle,
@@ -942,7 +974,7 @@ const Home = () => {
               onChange={(e) => handleCityChange(e.target.value)}
               style={{
                 width: "100%",
-                padding: isRTL ? "15px 46px 15px 46px" : "15px 46px 15px 46px",
+                padding: "15px 46px 15px 46px",
                 borderRadius: "14px",
                 border: `1px solid ${c.border}`,
                 backgroundColor: darkMode
@@ -986,7 +1018,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Store Cards */}
+        {/* ─── STORE CARDS (updated with real API fields) ─── */}
         <div
           style={{
             display: "grid",
@@ -995,6 +1027,7 @@ const Home = () => {
           }}
         >
           {storesLoading ? (
+            /* ---------- Skeletons ---------- */
             Array.from({ length: 6 }, (_, i) => (
               <div
                 key={i}
@@ -1037,6 +1070,7 @@ const Home = () => {
               </div>
             ))
           ) : storesError ? (
+            /* ---------- Error ---------- */
             <div
               style={{
                 gridColumn: "1 / -1",
@@ -1059,6 +1093,7 @@ const Home = () => {
               </h3>
             </div>
           ) : stores.length === 0 ? (
+            /* ---------- Empty ---------- */
             <div
               style={{
                 gridColumn: "1 / -1",
@@ -1081,176 +1116,358 @@ const Home = () => {
               </h3>
             </div>
           ) : (
-            stores.slice(0, 6).map((store) => (
-              <Link
-                key={store.id}
-                to={`/store/${store.id}`}
-                className="store-card"
-                style={{
-                  ...glassStyle,
-                  borderRadius: "22px",
-                  overflow: "hidden",
-                  cursor: "pointer",
-                  direction: dir,
-                  textDecoration: "none",
-                  display: "flex",
-                  flexDirection: "column",
-                  padding: "12px",
-                }}
-              >
-                <div
+            /* ---------- Cards ---------- */
+            stores.slice(0, 6).map((store) => {
+              const isOpen = store.isOpen !== false;
+              const hasRating =
+                (store.ratingCount || 0) > 0 || (store.rating || 0) > 0;
+              const deliveryFee = Number(store.deliveryFee) || 0;
+              const minOrder = Number(store.minimumOrderAmount) || 0;
+              const distance = Number(store.distanceKm) || 0;
+
+              const storeName = isRTL
+                ? store.nameAr || store.nameEn
+                : store.nameEn || store.nameAr;
+
+              const street = isRTL
+                ? store.streetAr || store.streetEn
+                : store.streetEn || store.streetAr;
+              const address = [street, store.city].filter(Boolean).join(" • ");
+
+              const formatDistance = () => {
+                if (distance <= 0) return null;
+                if (distance < 1) {
+                  const m = Math.round(distance * 1000);
+                  return isRTL ? `${m} م` : `${m} m`;
+                }
+                const km = distance.toFixed(1);
+                return isRTL ? `${km} كم` : `${km} km`;
+              };
+              const distanceLabel = formatDistance();
+
+              return (
+                <Link
+                  key={store.id}
+                  to={`/stores/${store.id}`}
+                  className="store-card"
                   style={{
-                    height: "180px",
-                    borderRadius: "16px",
-                    background: darkMode
-                      ? "linear-gradient(135deg, #27272a 0%, #18181b 100%)"
-                      : "linear-gradient(135deg, #f4f4f5 0%, #e4e4e7 100%)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    position: "relative",
+                    ...glassStyle,
+                    borderRadius: "22px",
                     overflow: "hidden",
+                    cursor: "pointer",
+                    direction: dir,
+                    textDecoration: "none",
+                    display: "flex",
+                    flexDirection: "column",
+                    padding: "12px",
+                    opacity: isOpen ? 1 : 0.82,
                   }}
                 >
-                  {store.coverUrl ? (
-                    <img
-                      src={store.coverUrl}
-                      alt={isRTL ? store.nameAr : store.nameEn}
-                      className="store-img"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        transition: "transform 0.5s ease",
-                      }}
-                    />
-                  ) : (
-                    <Store size={48} style={{ color: c.textFaint }} />
-                  )}
+                  {/* Cover */}
                   <div
                     style={{
-                      position: "absolute",
-                      top: "12px",
-                      [isRTL ? "left" : "right"]: "12px",
-                      padding: "5px 10px",
-                      borderRadius: "100px",
-                      backgroundColor: "rgba(9, 9, 11, 0.78)",
-                      backdropFilter: "blur(8px)",
-                      WebkitBackdropFilter: "blur(8px)",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      color: "#fafafa",
+                      height: "180px",
+                      borderRadius: "16px",
+                      background: darkMode
+                        ? "linear-gradient(135deg, #27272a 0%, #18181b 100%)"
+                        : "linear-gradient(135deg, #f4f4f5 0%, #e4e4e7 100%)",
                       display: "flex",
                       alignItems: "center",
-                      gap: "5px",
+                      justifyContent: "center",
+                      position: "relative",
+                      overflow: "hidden",
                     }}
                   >
-                    <Clock size={12} color={ACCENT} />
-                    {store.estimatedPreparationMinutes
-                      ? `${store.estimatedPreparationMinutes} ${isRTL ? "دقيقة" : "min"}`
-                      : isRTL
-                        ? "20-30 دقيقة"
-                        : "20-30 min"}
-                  </div>
-                </div>
-
-                <div style={{ padding: "16px 8px 8px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "8px",
-                      gap: "8px",
-                    }}
-                  >
-                    <h3
-                      style={{
-                        fontSize: "17px",
-                        fontWeight: 800,
-                        color: c.text,
-                        margin: 0,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {isRTL ? store.nameAr : store.nameEn}
-                    </h3>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "3px",
-                        padding: "3px 8px",
-                        borderRadius: "8px",
-                        background: darkMode
-                          ? "rgba(234, 179, 8, 0.15)"
-                          : "#fef3c7",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <Star size={12} fill="#eab308" color="#eab308" />
-                      <span
+                    {store.coverUrl ? (
+                      <img
+                        src={store.coverUrl}
+                        alt={storeName}
+                        className="store-img"
                         style={{
-                          fontSize: "12px",
-                          fontWeight: 700,
-                          color: darkMode ? "#facc15" : "#ca8a04",
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          transition: "transform 0.5s ease",
                         }}
-                      >
-                        {store.rating ? store.rating.toFixed(1) : "4.8"}
-                      </span>
-                    </div>
-                  </div>
+                      />
+                    ) : (
+                      <Store size={48} style={{ color: c.textFaint }} />
+                    )}
 
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      fontSize: "13px",
-                      color: c.textMuted,
-                    }}
-                  >
+                    {/* Time OR Closed badge */}
                     <div
                       style={{
+                        position: "absolute",
+                        top: "12px",
+                        [isRTL ? "left" : "right"]: "12px",
+                        padding: "5px 10px",
+                        borderRadius: "100px",
+                        backgroundColor: isOpen
+                          ? "rgba(9, 9, 11, 0.78)"
+                          : "rgba(239, 68, 68, 0.88)",
+                        backdropFilter: "blur(8px)",
+                        WebkitBackdropFilter: "blur(8px)",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                        color: "#fafafa",
                         display: "flex",
                         alignItems: "center",
                         gap: "5px",
-                        minWidth: 0,
                       }}
                     >
-                      <MapPin
-                        size={13}
-                        color={ACCENT}
-                        style={{ flexShrink: 0 }}
-                      />
-                      <span
+                      <Clock size={12} color={isOpen ? ACCENT : "#ffffff"} />
+                      {isOpen
+                        ? store.estimatedPreparationMinutes
+                          ? `${store.estimatedPreparationMinutes} ${
+                              isRTL ? "دقيقة" : "min"
+                            }`
+                          : isRTL
+                            ? "20-30 دقيقة"
+                            : "20-30 min"
+                        : isRTL
+                          ? "مغلق الآن"
+                          : "Closed Now"}
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div style={{ padding: "16px 8px 8px" }}>
+                    {/* Name + Rating / NEW */}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "8px",
+                        gap: "8px",
+                      }}
+                    >
+                      <h3
                         style={{
+                          fontSize: "17px",
+                          fontWeight: 800,
+                          color: c.text,
+                          margin: 0,
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          minWidth: 0,
                         }}
                       >
-                        {store.city ||
-                          (isRTL ? "المنطقة المركزية" : "Central City")}
-                      </span>
+                        {storeName}
+                      </h3>
+
+                      {hasRating ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "3px",
+                            padding: "3px 8px",
+                            borderRadius: "8px",
+                            background: darkMode
+                              ? "rgba(234, 179, 8, 0.15)"
+                              : "#fef3c7",
+                            flexShrink: 0,
+                          }}
+                        >
+                          <Star size={12} fill="#eab308" color="#eab308" />
+                          <span
+                            style={{
+                              fontSize: "12px",
+                              fontWeight: 700,
+                              color: darkMode ? "#facc15" : "#ca8a04",
+                            }}
+                          >
+                            {(store.rating || 0).toFixed(1)}
+                          </span>
+                          {store.ratingCount > 0 && (
+                            <span
+                              style={{
+                                fontSize: "10px",
+                                opacity: 0.75,
+                                color: darkMode ? "#facc15" : "#ca8a04",
+                              }}
+                            >
+                              ({store.ratingCount})
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            padding: "3px 8px",
+                            borderRadius: "8px",
+                            background: darkMode
+                              ? "rgba(59, 130, 246, 0.18)"
+                              : "rgba(59, 130, 246, 0.10)",
+                            border: darkMode
+                              ? "1px solid rgba(59, 130, 246, 0.3)"
+                              : "1px solid rgba(59, 130, 246, 0.22)",
+                            flexShrink: 0,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: "10px",
+                              fontWeight: 700,
+                              letterSpacing: "0.04em",
+                              color: darkMode ? "#60a5fa" : "#2563eb",
+                            }}
+                          >
+                            {isRTL ? "جديد" : "NEW"}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    <span
-                      style={{ color: ACCENT, fontWeight: 700, flexShrink: 0 }}
+
+                    {/* Address */}
+                    {address && (
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "5px",
+                          fontSize: "12px",
+                          color: c.textMuted,
+                          marginBottom: "8px",
+                          minWidth: 0,
+                        }}
+                      >
+                        <MapPin
+                          size={12}
+                          color={ACCENT}
+                          style={{ flexShrink: 0 }}
+                        />
+                        <span
+                          style={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {address}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Delivery fee + Min + Distance */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "8px",
+                        fontSize: "12px",
+                      }}
                     >
-                      {store.deliveryFee > 0
-                        ? `${store.deliveryFee} ${isRTL ? "ج.م توصيل" : "EGP"}`
-                        : isRTL
-                          ? "توصيل مجاني"
-                          : "Free Delivery"}
-                    </span>
+                      <span
+                        style={{
+                          color: ACCENT,
+                          fontWeight: 700,
+                          flexShrink: 0,
+                          fontSize: "13px",
+                        }}
+                      >
+                        {deliveryFee > 0
+                          ? `${deliveryFee} ${isRTL ? "ج.م توصيل" : "EGP"}`
+                          : isRTL
+                            ? "توصيل مجاني"
+                            : "Free Delivery"}
+                      </span>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {minOrder > 0 && (
+                          <span
+                            style={{
+                              fontSize: "11px",
+                              color: c.textFaint,
+                              fontWeight: 500,
+                            }}
+                          >
+                            {isRTL
+                              ? `أقل ${minOrder} ج.م`
+                              : `Min ${minOrder} EGP`}
+                          </span>
+                        )}
+                        {minOrder > 0 && distanceLabel && (
+                          <span
+                            style={{ fontSize: "11px", color: c.textFaint }}
+                            aria-hidden="true"
+                          >
+                            •
+                          </span>
+                        )}
+                        {distanceLabel && (
+                          <span
+                            style={{
+                              fontSize: "11px",
+                              color: c.textFaint,
+                              fontWeight: 500,
+                            }}
+                          >
+                            {distanceLabel}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))
+                </Link>
+              );
+            })
           )}
         </div>
+
+        {/* Bottom "View All" — extra affordance for users who reached the end */}
+        {!storesLoading && !storesError && stores.length > 6 && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "36px",
+            }}
+          >
+            <Link
+              to="/stores"
+              style={{
+                ...glassStyle,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "14px 28px",
+                borderRadius: "16px",
+                color: c.text,
+                textDecoration: "none",
+                fontSize: "15px",
+                fontWeight: 600,
+                transition: "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = ACCENT;
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = darkMode
+                  ? "0 14px 34px rgba(34,197,94,0.25)"
+                  : "0 14px 34px rgba(34,197,94,0.15)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = c.border;
+                e.currentTarget.style.transform = "none";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              <Store size={18} color={ACCENT} />
+              <span>{isRTL ? "تصفح جميع المتاجر" : "Browse All Stores"}</span>
+              {isRTL ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+            </Link>
+          </div>
+        )}
       </section>
 
       {/* ========== HOW IT WORKS ========== */}

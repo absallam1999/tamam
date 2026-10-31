@@ -236,8 +236,9 @@ const Contact = () => {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = ACCENT;
-              e.currentTarget.style.transform =
-                "translateX(isRTL ? 4px : -4px)";
+              e.currentTarget.style.transform = `translateX(${
+                isRTL ? 4 : -4
+              }px)`;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.color = c.textMuted;
@@ -259,7 +260,7 @@ const Contact = () => {
             marginBottom: "48px",
           }}
         >
-          {/* Micro Tag */}
+          {/* Badge */}
           <div
             style={{
               display: "inline-flex",

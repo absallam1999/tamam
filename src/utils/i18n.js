@@ -560,7 +560,7 @@ const resources = {
         payments: {
           title: "Payments & Refunds",
           content:
-            "All payments are processed through secure, certified payment gateways operating in Egypt. Delivery fees are calculated based on distance, time, and demand. Our refund policy applies on a case-by-case basis and refunds are processed within 7-14 business days. Cash payments are available in select situations.",
+            "We offer secure payment options, including digital wallets, InstaPay, and cash on delivery for eligible orders. Online payments are processed through approved Egyptian payment gateways using secure encryption. Delivery fees vary based on distance, time, and order requirements. Refunds are reviewed on a case-by-case basis and credited to your in-app wallet. Wallet balances cannot be withdrawn as cash or transferred externally.",
         },
         privacy: {
           title: "Privacy & Data Protection",
@@ -642,9 +642,9 @@ const resources = {
           q9: "How do I create an account?",
           a9: "Download the app and tap 'Sign Up'. You can register with your email, phone number.",
           q10: "How do I reset my password?",
-          a10: "Tap 'Forgot Password' on the login screen. We'll send you a link to reset your password via email or SMS.",
+          a10: "Tap 'Forgot Password?' on the login screen, then enter your phone number to receive a verification code and reset your password.",
           q11: "How do I contact customer support?",
-          a11: "You can reach us 24/7 via in-app chat, email at support@tamamapp.net, or call us at +1 (234) 567-8900.",
+          a11: "You can reach us 24/7 via in-app chat, email at support@tamamapp.net, or call us at +20 (015) 594 777 26.",
           q12: "Can I cancel my order?",
           a12: "You can cancel your order within 2 minutes of placing it. After that, the restaurant may have already started preparing your food.",
           q13: "Do you offer refunds?",
@@ -1265,7 +1265,7 @@ const resources = {
         payments: {
           title: "المدفوعات والاسترداد",
           content:
-            "جميع المدفوعات تتم من خلال بوابات دفع آمنة ومعتمدة في مصر. رسوم التوصيل تحدد حسب المسافة والوقت والطلب. سياسة الاسترداد تطبق حسب كل حالة وتتم خلال ٧-١٤ يوم عمل. الدفع النقدي متاح في حالات محددة.",
+            "نوفر وسائل دفع آمنة ومتعددة، تشمل المحافظ الإلكترونية وInstaPay والدفع النقدي عند الاستلام للطلبات المؤهلة. تُحدد رسوم التوصيل حسب المسافة والوقت وطبيعة الطلب. تتم معالجة طلبات الاسترداد وفقًا لكل حالة، وتُضاف المبالغ المستردة إلى محفظتك داخل التطبيق، مع العلم أنه لا يمكن سحب رصيد المحفظة نقديًا أو تحويله إلى جهات خارجية.",
         },
         privacy: {
           title: "الخصوصية وحماية البيانات",
@@ -1347,9 +1347,9 @@ const resources = {
           q9: "كيف يمكنني إنشاء حساب؟",
           a9: "قم بتحميل التطبيق واضغط على 'إنشاء حساب'. يمكنك التسجيل باستخدام بريدك الإلكتروني أو رقم هاتفك.",
           q10: "كيف يمكنني إعادة تعيين كلمة المرور؟",
-          a10: "اضغط على 'نسيت كلمة المرور' في شاشة تسجيل الدخول. سنرسل لك رابطاً لإعادة تعيين كلمة المرور عبر البريد الإلكتروني أو الرسائل النصية.",
+          a10: "اضغط على 'نسيت كلمة المرور؟' في شاشة تسجيل الدخول، ثم أدخل رقم هاتفك لاستلام رمز التحقق وإعادة تعيين كلمة المرور.",
           q11: "كيف يمكنني الاتصال بدعم العملاء؟",
-          a11: "يمكنك التواصل معنا على مدار الساعة عبر الدردشة داخل التطبيق أو البريد الإلكتروني support@tamamapp.net أو الاتصال على +1 (234) 567-8900.",
+          a11: "يمكنك التواصل معنا على مدار الساعة عبر الدردشة داخل التطبيق أو البريد الإلكتروني support@tamamapp.net أو الاتصال على +20 (015) 594 777 26.",
           q12: "هل يمكنني إلغاء طلبي؟",
           a12: "يمكنك إلغاء طلبك خلال دقيقتين من تقديمه. بعد ذلك، قد يكون المطعم قد بدأ في تحضير طعامك.",
           q13: "هل تقدمون استرداد الأموال؟",

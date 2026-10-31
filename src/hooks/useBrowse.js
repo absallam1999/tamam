@@ -45,7 +45,7 @@ export function useBrowse() {
     queryKey: [BROWSE_STORES_KEY, search, selectedCityId],
     queryFn: async () => {
       const params = {};
-      if (search) params.query = search;
+      if (search) params.q = search;
       if (selectedCityId) params.cityId = selectedCityId;
 
       const response = await apiClient.get(
@@ -61,7 +61,7 @@ export function useBrowse() {
   const { data: cities, isLoading: citiesLoading } = useQuery({
     queryKey: [BROWSE_CITIES_KEY],
     queryFn: async () => {
-      const response = await apiClient.get("/api/public/cities");
+      const response = await apiClient.get("/api/cities/browse");
       const result = unwrap(response.data);
       return Array.isArray(result) ? result : (result?.data ?? []);
     },
@@ -113,7 +113,7 @@ export function useAllStores() {
         page,
         limit: PAGE_SIZE,
       };
-      if (search) params.query = search;
+      if (search) params.q = search;
       if (selectedCityId) params.cityId = selectedCityId;
 
       const response = await apiClient.get("/api/browse/stores/search", params);
@@ -134,7 +134,7 @@ export function useAllStores() {
   const { data: cities, isLoading: citiesLoading } = useQuery({
     queryKey: [BROWSE_CITIES_KEY],
     queryFn: async () => {
-      const response = await apiClient.get("/api/public/cities");
+      const response = await apiClient.get("/api/cities/browse");
       const result = unwrap(response.data);
       return Array.isArray(result) ? result : (result?.data ?? []);
     },
