@@ -11,6 +11,7 @@ import {
   ArrowRight,
   ArrowLeft,
   ShoppingBag,
+  ShoppingCart,
   Truck,
   Store,
   Search,
@@ -20,7 +21,6 @@ import {
   Pill,
   Smartphone,
   QrCode,
-  Package,
 } from "lucide-react";
 import { useLanguage } from "../contexts/LangContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -190,7 +190,7 @@ const Home = () => {
     },
     {
       step: "02",
-      icon: Package,
+      icon: ShoppingCart,
       title: isRTL ? "خصص طلبك وادفع بأمان" : "Customize & Pay Securely",
       desc: isRTL
         ? "أضف ملاحظاتك وخياراتك وادفع بالمحفظة، انستاباى أو نقداً عند الاستلام."
