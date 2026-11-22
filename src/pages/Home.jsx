@@ -25,6 +25,7 @@ import {
 import { useLanguage } from "../contexts/LangContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { useBrowse } from "../hooks/useBrowse";
+import resolveMediaUrl from "../utils/resolveMediaUrl";
 
 const TOKENS = {
   dark: {
@@ -122,6 +123,53 @@ const Interactive3DBackground = ({ darkMode }) => {
       </Float>
     </>
   );
+};
+
+const StoreCoverImage = ({ coverUrl, logoUrl, alt, fallbackColor }) => {
+  const [stage, setStage] = useState(
+    coverUrl ? "cover" : logoUrl ? "logo" : "fallback",
+  );
+
+  useEffect(() => {
+    setStage(coverUrl ? "cover" : logoUrl ? "logo" : "fallback");
+  }, [coverUrl, logoUrl]);
+
+  if (stage === "cover" && coverUrl) {
+    return (
+      <img
+        src={coverUrl}
+        alt={alt}
+        className="store-img"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transition: "transform 0.5s ease",
+        }}
+        onError={() => setStage(logoUrl ? "logo" : "fallback")}
+      />
+    );
+  }
+
+  if (stage !== "fallback" && logoUrl) {
+    return (
+      <img
+        src={logoUrl}
+        alt={alt}
+        className="store-img"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "contain",
+          padding: "16px",
+          transition: "transform 0.5s ease",
+        }}
+        onError={() => setStage("fallback")}
+      />
+    );
+  }
+
+  return <Store size={48} style={{ color: fallbackColor }} />;
 };
 
 const Home = () => {
@@ -831,7 +879,7 @@ const Home = () => {
           zIndex: 4,
         }}
       >
-        {/* ─── HEADER (with View All) ─── */}
+        {/* ─── HEADER ─── */}
         <div
           style={{
             display: "flex",
@@ -999,7 +1047,9 @@ const Home = () => {
                   value={city.id}
                   style={{ background: c.surfaceSolid }}
                 >
-                  {city.name}
+                  {isRTL
+                    ? city.nameAr || city.nameEn || city.name || ""
+                    : city.nameEn || city.nameAr || city.name || ""}
                 </option>
               ))}
             </select>
@@ -1018,7 +1068,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* ─── STORE CARDS (updated with real API fields) ─── */}
+        {/* ─── STORE CARDS ─── */}
         <div
           style={{
             display: "grid",
@@ -1132,7 +1182,21 @@ const Home = () => {
               const street = isRTL
                 ? store.streetAr || store.streetEn
                 : store.streetEn || store.streetAr;
-              const address = [street, store.city].filter(Boolean).join(" • ");
+              const city =
+                (isRTL
+                  ? store.cityAr || store.cityEn
+                  : store.cityEn || store.cityAr) ||
+                (typeof store.city === "string"
+                  ? store.city
+                  : isRTL
+                    ? store.city?.nameAr || store.city?.nameEn
+                    : store.city?.nameEn || store.city?.nameAr);
+              const address = [street, city].filter(Boolean).join(" • ");
+
+              const coverUrl = resolveMediaUrl(
+                store.coverImageUrl || store.coverUrl,
+              );
+              const logoUrl = resolveMediaUrl(store.logoUrl);
 
               const formatDistance = () => {
                 if (distance <= 0) return null;
@@ -1178,21 +1242,12 @@ const Home = () => {
                       overflow: "hidden",
                     }}
                   >
-                    {store.coverUrl ? (
-                      <img
-                        src={store.coverUrl}
-                        alt={storeName}
-                        className="store-img"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          transition: "transform 0.5s ease",
-                        }}
-                      />
-                    ) : (
-                      <Store size={48} style={{ color: c.textFaint }} />
-                    )}
+                    <StoreCoverImage
+                      coverUrl={coverUrl}
+                      logoUrl={logoUrl}
+                      alt={storeName}
+                      fallbackColor={c.textFaint}
+                    />
 
                     {/* Time OR Closed badge */}
                     <div
@@ -1425,7 +1480,7 @@ const Home = () => {
           )}
         </div>
 
-        {/* Bottom "View All" — extra affordance for users who reached the end */}
+        {/* Bottom "View All" */}
         {!storesLoading && !storesError && stores.length > 6 && (
           <div
             style={{

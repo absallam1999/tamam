@@ -32,7 +32,7 @@ const Footer = () => {
     },
     {
       label: "TikTok",
-      href: "https://www.tiktok.com/@tamamappnet",
+      href: "https://vm.tiktok.com/ZS9PjhaC2X5Yq-yJmGa",
       color: "#22c55e",
       icon: (
         <svg

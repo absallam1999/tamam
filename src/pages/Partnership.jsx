@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -17,29 +17,40 @@ import {
   Handshake,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
+  AlertCircle,
+  LocationEdit,
+  RefreshCw,
+  Navigation,
+  Calendar,
+  Tag,
+  Map,
 } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LangContext";
 import { usePartnership } from "../hooks/usePartnership";
+import { apiClient } from "../lib/api-client";
 
 /* =========================================================
    SHARED DESIGN TOKENS
    ========================================================= */
 const TOKENS = {
   dark: {
-    text: "#f4f4f5", // zinc-100
-    textStrong: "#fafafa", // zinc-50
-    textMuted: "#a1a1aa", // zinc-400
-    textFaint: "#71717a", // zinc-500
-    border: "rgba(255,255,255,0.06)",
-    borderStrong: "rgba(255,255,255,0.10)",
+    text: "#f4f4f5",
+    textStrong: "#fafafa",
+    textMuted: "#a1a1aa",
+    textFaint: "#71717a",
+    border: "rgba(255,255,255,0.08)",
+    borderStrong: "rgba(255,255,255,0.14)",
     surface: "rgba(24, 24, 27, 0.72)",
     surfaceGradient:
-      "linear-gradient(135deg, rgba(24,24,27,0.72) 0%, rgba(15,15,17,0.60) 100%)",
+      "linear-gradient(135deg, rgba(24,24,27,0.82) 0%, rgba(15,15,17,0.68) 100%)",
     surfaceSolid: "#18181b",
+    inputBg: "rgba(255,255,255,0.035)",
     badgeBg: "rgba(34,197,94,0.12)",
     badgeBorder: "rgba(34,197,94,0.28)",
-    chipBg: "rgba(255,255,255,0.03)",
+    chipBg: "rgba(255,255,255,0.04)",
+    divider: "rgba(255,255,255,0.07)",
     shadow:
       "0 20px 50px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.05)",
   },
@@ -48,135 +59,395 @@ const TOKENS = {
     textStrong: "#09090b",
     textMuted: "#52525b",
     textFaint: "#71717a",
-    border: "rgba(0,0,0,0.06)",
-    borderStrong: "rgba(0,0,0,0.10)",
-    surface: "rgba(255,255,255,0.85)",
+    border: "rgba(0,0,0,0.08)",
+    borderStrong: "rgba(0,0,0,0.14)",
+    surface: "rgba(255,255,255,0.88)",
     surfaceGradient:
-      "linear-gradient(135deg, rgba(255,255,255,0.90) 0%, rgba(250,250,250,0.75) 100%)",
+      "linear-gradient(135deg, rgba(255,255,255,0.94) 0%, rgba(250,250,250,0.82) 100%)",
     surfaceSolid: "#ffffff",
+    inputBg: "rgba(0,0,0,0.025)",
     badgeBg: "rgba(34,197,94,0.08)",
     badgeBorder: "rgba(34,197,94,0.22)",
-    chipBg: "rgba(0,0,0,0.02)",
+    chipBg: "rgba(0,0,0,0.03)",
+    divider: "rgba(0,0,0,0.06)",
     shadow: "0 20px 50px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)",
   },
 };
 
 const ACCENT = "var(--accent-500, #22c55e)";
 
+const INITIAL_FORM_DATA = {
+  storeNameAr: "",
+  storeNameEn: "",
+  ownerName: "",
+  fullName: "",
+  phone: "",
+  email: "",
+  storeCategoryId: "",
+  cityId: "",
+  areaId: "",
+  address: "",
+  storeDescriptionAr: "",
+  storeDescriptionEn: "",
+  latitude: null,
+  longitude: null,
+  vehicleType: "",
+  vehiclePlate: "",
+  licenseNumber: "",
+  licenseExpiresAt: "",
+  area: "",
+  description: "",
+};
+
+function extractApiList(res) {
+  let payload =
+    res && typeof res === "object" && "data" in res ? res.data : res;
+  if (
+    payload &&
+    typeof payload === "object" &&
+    !Array.isArray(payload) &&
+    "data" in payload
+  ) {
+    payload = payload.data;
+  }
+  const items = Array.isArray(payload) ? payload : payload?.items;
+  return Array.isArray(items) ? items : [];
+}
+
 const Partnership = () => {
   const { darkMode } = useTheme();
   const { isRTL } = useLanguage();
   const { t } = useTranslation();
+
   const [isVisible, setIsVisible] = useState(false);
   const [step, setStep] = useState(1);
   const [partnerType, setPartnerType] = useState(null);
-  const [formData, setFormData] = useState({
-    businessName: "",
-    ownerName: "",
-    phone: "",
-    email: "",
-    address: "",
-    city: "",
-    type: "",
-    category: "",
-    selectedTypes: [],
-    description: "",
-    vehicleType: "",
-  });
+  const [localError, setLocalError] = useState(null);
+  const [geoLoading, setGeoLoading] = useState(false);
+
+  const [cities, setCities] = useState([]);
+  const [citiesLoading, setCitiesLoading] = useState(false);
+  const [citiesError, setCitiesError] = useState(false);
+
+  const [areas, setAreas] = useState([]);
+  const [areasLoading, setAreasLoading] = useState(false);
+  const [areasError, setAreasError] = useState(false);
+
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
 
   const {
     isSubmitting,
     error: submitError,
     success: submitSuccess,
-    typesLoading,
-    storeTypes,
+    categoriesLoading,
+    storeCategories,
+    fetchActiveStoreCategories,
     submitStoreRequest,
     submitCourierRequest,
+    submitSupervisorRequest,
     reset,
   } = usePartnership();
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
 
   useEffect(() => {
     setIsVisible(false);
     const timer = setTimeout(() => setIsVisible(true), 50);
     return () => clearTimeout(timer);
-  }, [isRTL]);
+  }, [isRTL, step, submitSuccess]);
+
+  const fetchCities = useCallback(async () => {
+    setCitiesLoading(true);
+    setCitiesError(false);
+    try {
+      const res = await apiClient.get("/api/cities/browse");
+      const list = extractApiList(res).filter(
+        (city) => city?.isActive !== false,
+      );
+      setCities(list);
+    } catch {
+      setCities([]);
+      setCitiesError(true);
+    } finally {
+      setCitiesLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCities();
+  }, [fetchCities]);
+
+  const fetchAreasForCity = useCallback(async (cityId) => {
+    if (!cityId) {
+      setAreas([]);
+      setAreasError(false);
+      setAreasLoading(false);
+      return;
+    }
+
+    setAreasLoading(true);
+    setAreasError(false);
+    try {
+      const res = await apiClient.get(`/api/cities/${cityId}/areas`);
+      const list = extractApiList(res).filter(
+        (area) => area?.isActive !== false,
+      );
+      setAreas(list);
+    } catch {
+      setAreas([]);
+      setAreasError(true);
+    } finally {
+      setAreasLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    if (!formData.cityId) {
+      setAreas([]);
+      setAreasError(false);
+      setAreasLoading(false);
+      return;
+    }
+
+    setAreasLoading(true);
+    setAreasError(false);
+    apiClient
+      .get(`/api/cities/${formData.cityId}/areas`)
+      .then((res) => {
+        if (!active) return;
+        const list = extractApiList(res).filter(
+          (area) => area?.isActive !== false,
+        );
+        setAreas(list);
+      })
+      .catch(() => {
+        if (!active) return;
+        setAreas([]);
+        setAreasError(true);
+      })
+      .finally(() => {
+        if (active) setAreasLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [formData.cityId]);
+
+  const activeCategories = useMemo(() => {
+    return (storeCategories || [])
+      .filter((cat) => cat?.isActive !== false)
+      .slice()
+      .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+  }, [storeCategories]);
+
+  const selectedCategoryObj = useMemo(
+    () =>
+      activeCategories.find((cat) => cat.id === formData.storeCategoryId) ||
+      null,
+    [activeCategories, formData.storeCategoryId],
+  );
+
+  const selectedAreaObj = useMemo(
+    () => areas.find((a) => a.id === formData.areaId) || null,
+    [areas, formData.areaId],
+  );
 
   const dir = isRTL ? "rtl" : "ltr";
   const c = darkMode ? TOKENS.dark : TOKENS.light;
 
-  // Glass surface token
-  const glassStyle = {
+  const glassCardStyle = {
     background: c.surfaceGradient,
     border: `1px solid ${c.border}`,
-  };
-
-  const handleTypeSelect = (type) => {
-    setPartnerType(type);
-    setFormData((prev) => ({ ...prev, type }));
-    setStep(2);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (partnerType === "store") {
-        await submitStoreRequest(formData);
-      } else {
-        await submitCourierRequest(formData);
-      }
-    } catch (err) {
-      // Error handled by hook
-    }
-  };
-
-  const handleBack = () => {
-    setStep(1);
-    setPartnerType(null);
-    reset();
-  };
-
-  const handleReset = () => {
-    reset();
-    setStep(1);
-    setPartnerType(null);
-    setFormData({
-      businessName: "",
-      ownerName: "",
-      phone: "",
-      email: "",
-      address: "",
-      city: "",
-      type: "",
-      category: "",
-      selectedTypes: [],
-      description: "",
-      vehicleType: "",
-    });
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    backdropFilter: "blur(20px)",
+    boxShadow: c.shadow,
   };
 
   const inputStyle = {
     width: "100%",
     padding: "12px 16px",
     borderRadius: "14px",
-    border: darkMode
-      ? "1px solid rgba(255,255,255,0.08)"
-      : "1px solid rgba(0,0,0,0.08)",
-    backgroundColor: darkMode ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)",
-    color: darkMode ? "#f4f4f5" : "#18181b",
+    border: `1px solid ${c.border}`,
+    backgroundColor: c.inputBg,
+    color: c.text,
     fontSize: "14px",
     outline: "none",
     fontFamily: "inherit",
     direction: dir,
+    transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+  };
+
+  const selectStyle = {
+    ...inputStyle,
+    appearance: "none",
+    WebkitAppearance: "none",
+    paddingInlineEnd: "42px",
+    cursor: "pointer",
+  };
+
+  const optionStyle = {
+    backgroundColor: c.surfaceSolid,
+    color: c.text,
+  };
+
+  const labelStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    fontSize: "12px",
+    fontWeight: 600,
+    color: darkMode ? "#d4d4d8" : "#3f3f46",
+    marginBottom: "7px",
+  };
+
+  const sectionHeaderStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    fontSize: "13px",
+    fontWeight: 700,
+    color: c.textStrong,
+    paddingBottom: "10px",
+    marginBottom: "16px",
+    borderBottom: `1px solid ${c.divider}`,
+  };
+
+  const handleTypeSelect = (type) => {
+    setPartnerType(type);
+    setLocalError(null);
+    reset();
+    setStep(2);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleChange = (e) => {
+    if (localError) setLocalError(null);
+    const { name, value } = e.target;
+    if (name === "cityId") {
+      setFormData((prev) => ({
+        ...prev,
+        cityId: value,
+        areaId: "",
+      }));
+      return;
+    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      setLocalError(
+        isRTL
+          ? "متصفحك لا يدعم تحديد الموقع الجغرافي"
+          : "Geolocation is not supported by your browser",
+      );
+      return;
+    }
+    setGeoLoading(true);
+    setLocalError(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setFormData((prev) => ({
+          ...prev,
+          latitude: Number(pos.coords.latitude.toFixed(6)),
+          longitude: Number(pos.coords.longitude.toFixed(6)),
+        }));
+        setGeoLoading(false);
+      },
+      () => {
+        setGeoLoading(false);
+        setLocalError(
+          isRTL
+            ? "تعذر تحديد موقعك الحالي. يمكنك المتابعة بدونه."
+            : "Could not detect your location. You can continue without it.",
+        );
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLocalError(null);
+
+    try {
+      if (partnerType === "store") {
+        if (!formData.storeCategoryId) {
+          setLocalError(
+            isRTL
+              ? "يرجى اختيار تصنيف المتجر"
+              : "Please select a store category",
+          );
+          return;
+        }
+        if (!formData.cityId) {
+          setLocalError(isRTL ? "يرجى اختيار المدينة" : "Please select a city");
+          return;
+        }
+        await submitStoreRequest({
+          ...formData,
+          storeDescriptionAr:
+            formData.storeDescriptionAr?.trim() ||
+            formData.description?.trim() ||
+            null,
+          storeDescriptionEn:
+            formData.storeDescriptionEn?.trim() ||
+            formData.description?.trim() ||
+            null,
+          latitude:
+            typeof formData.latitude === "number" ? formData.latitude : null,
+          longitude:
+            typeof formData.longitude === "number" ? formData.longitude : null,
+        });
+      } else if (partnerType === "courier") {
+        if (!formData.cityId) {
+          setLocalError(isRTL ? "يرجى اختيار المدينة" : "Please select a city");
+          return;
+        }
+        await submitCourierRequest({
+          ...formData,
+          licenseExpiresAt: formData.licenseExpiresAt
+            ? new Date(formData.licenseExpiresAt).toISOString()
+            : null,
+        });
+      } else if (partnerType === "supervisor") {
+        if (!formData.cityId) {
+          setLocalError(isRTL ? "يرجى اختيار المدينة" : "Please select a city");
+          return;
+        }
+        if (!formData.areaId) {
+          setLocalError(
+            isRTL ? "يرجى اختيار المنطقة" : "Please select an area",
+          );
+          return;
+        }
+        await submitSupervisorRequest({
+          ...formData,
+          areaIds: [formData.areaId],
+        });
+      }
+    } catch (err) {
+      if (err?.message) {
+        setLocalError(err.message);
+      }
+    }
+  };
+
+  const handleBack = () => {
+    setStep(1);
+    setPartnerType(null);
+    setLocalError(null);
+    reset();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleReset = () => {
+    reset();
+    setLocalError(null);
+    setStep(1);
+    setPartnerType(null);
+    setAreas([]);
+    setFormData(INITIAL_FORM_DATA);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const partnerOptions = [
@@ -196,30 +467,360 @@ const Partnership = () => {
       icon: Truck,
       title: isRTL ? "عامل توصيل" : "Delivery Courier",
       description: isRTL
-        ? "انضم كعامل توصيل وابداء في تحصيل الأموال مع كل توصيلة."
+        ? "انضم كعامل توصيل وابدأ في تحصيل الأرباح مع كل توصيلة."
         : "Join as a delivery courier to start delivering orders and earn money with every delivery.",
       benefits: isRTL
         ? ["أرباح مرنة", "طرق محسّنة", "دعم على مدار الساعة"]
         : ["Flexible earnings", "Optimized routes", "24/7 support"],
     },
+    {
+      type: "supervisor",
+      icon: LocationEdit,
+      title: isRTL ? "مشرف منطقة" : "Area Supervisor",
+      description: isRTL
+        ? "انضم كمشرف لإدارة السائقين ومتابعة تنفيذ الطلبات في منطقتك."
+        : "Join as a supervisor to manage drivers and oversee order fulfillment in your area.",
+      benefits: isRTL
+        ? [
+            "إدارة فريق السائقين",
+            "متابعة مباشرة للطلبات",
+            "عمولة ثابتة لكل طلب",
+          ]
+        : ["Manage driver fleet", "Live order tracking", "Fixed fee per order"],
+    },
   ];
+
+  const selectedOption = partnerOptions.find((o) => o.type === partnerType);
+  const SelectedIcon = selectedOption?.icon || Handshake;
+  const activeError = submitError || localError;
+
+  const renderCitySelect = () => (
+    <div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "7px",
+        }}
+      >
+        <label style={{ ...labelStyle, marginBottom: 0 }}>
+          <MapPin size={12} style={{ flexShrink: 0 }} />
+          <span>{isRTL ? "المدينة" : "City"} *</span>
+        </label>
+        {(citiesError || (!citiesLoading && cities.length === 0)) && (
+          <button
+            type="button"
+            onClick={fetchCities}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              background: "none",
+              border: "none",
+              color: ACCENT,
+              fontSize: "11px",
+              fontWeight: 600,
+              cursor: "pointer",
+              padding: 0,
+              fontFamily: "inherit",
+            }}
+          >
+            <RefreshCw size={11} />
+            <span>{isRTL ? "إعادة المحاولة" : "Retry"}</span>
+          </button>
+        )}
+      </div>
+
+      <div style={{ position: "relative" }}>
+        <select
+          name="cityId"
+          value={formData.cityId}
+          onChange={handleChange}
+          required
+          disabled={citiesLoading || cities.length === 0}
+          className="tamam-field"
+          style={{
+            ...selectStyle,
+            opacity: citiesLoading || cities.length === 0 ? 0.7 : 1,
+            cursor:
+              citiesLoading || cities.length === 0 ? "not-allowed" : "pointer",
+          }}
+        >
+          <option value="" style={optionStyle}>
+            {citiesLoading
+              ? isRTL
+                ? "جاري تحميل المدن..."
+                : "Loading cities..."
+              : cities.length === 0
+                ? isRTL
+                  ? "لا توجد مدن متاحة حالياً"
+                  : "No cities available"
+                : isRTL
+                  ? "اختر المدينة"
+                  : "Select City"}
+          </option>
+          {cities.map((city) => (
+            <option key={city.id} value={city.id} style={optionStyle}>
+              {isRTL ? city.nameAr || city.nameEn : city.nameEn || city.nameAr}
+            </option>
+          ))}
+        </select>
+        <ChevronDown
+          size={16}
+          style={{
+            position: "absolute",
+            top: "50%",
+            transform: "translateY(-50%)",
+            insetInlineEnd: "14px",
+            pointerEvents: "none",
+            color: c.textMuted,
+          }}
+        />
+      </div>
+    </div>
+  );
+
+  const renderAreaSelect = () => {
+    const noCitySelected = !formData.cityId;
+    const isDisabled = noCitySelected || areasLoading || areas.length === 0;
+
+    return (
+      <div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "7px",
+          }}
+        >
+          <label style={{ ...labelStyle, marginBottom: 0 }}>
+            <Map size={12} style={{ flexShrink: 0 }} />
+            <span>{isRTL ? "المنطقة" : "Area"} *</span>
+          </label>
+          {formData.cityId &&
+            (areasError || (!areasLoading && areas.length === 0)) && (
+              <button
+                type="button"
+                onClick={() => fetchAreasForCity(formData.cityId)}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  background: "none",
+                  border: "none",
+                  color: ACCENT,
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  padding: 0,
+                  fontFamily: "inherit",
+                }}
+              >
+                <RefreshCw size={11} />
+                <span>{isRTL ? "إعادة المحاولة" : "Retry"}</span>
+              </button>
+            )}
+        </div>
+
+        <div style={{ position: "relative" }}>
+          <select
+            name="areaId"
+            value={formData.areaId}
+            onChange={handleChange}
+            required
+            disabled={isDisabled}
+            className="tamam-field"
+            style={{
+              ...selectStyle,
+              opacity: isDisabled ? 0.7 : 1,
+              cursor: isDisabled ? "not-allowed" : "pointer",
+            }}
+          >
+            <option value="" style={optionStyle}>
+              {noCitySelected
+                ? isRTL
+                  ? "اختر المدينة أولاً"
+                  : "Select a city first"
+                : areasLoading
+                  ? isRTL
+                    ? "جاري تحميل المناطق..."
+                    : "Loading areas..."
+                  : areas.length === 0
+                    ? isRTL
+                      ? "لا توجد مناطق متاحة في هذه المدينة"
+                      : "No areas available in this city"
+                    : isRTL
+                      ? "اختر المنطقة"
+                      : "Select Area"}
+            </option>
+            {areas.map((area) => (
+              <option key={area.id} value={area.id} style={optionStyle}>
+                {area.name ||
+                  (isRTL
+                    ? area.nameAr || area.nameEn
+                    : area.nameEn || area.nameAr) ||
+                  area.id}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            size={16}
+            style={{
+              position: "absolute",
+              top: "50%",
+              transform: "translateY(-50%)",
+              insetInlineEnd: "14px",
+              pointerEvents: "none",
+              color: c.textMuted,
+            }}
+          />
+        </div>
+
+        {selectedAreaObj?.description && (
+          <p
+            style={{
+              margin: "6px 2px 0",
+              fontSize: "12px",
+              color: c.textMuted,
+            }}
+          >
+            {selectedAreaObj.description}
+          </p>
+        )}
+      </div>
+    );
+  };
+
+  const renderCategorySelect = () => (
+    <div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "7px",
+        }}
+      >
+        <label style={{ ...labelStyle, marginBottom: 0 }}>
+          <Tag size={12} style={{ flexShrink: 0 }} />
+          <span>{isRTL ? "تصنيف المتجر" : "Store Category"} *</span>
+        </label>
+        {!categoriesLoading && activeCategories.length === 0 && (
+          <button
+            type="button"
+            onClick={() => fetchActiveStoreCategories().catch(() => {})}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              background: "none",
+              border: "none",
+              color: ACCENT,
+              fontSize: "11px",
+              fontWeight: 600,
+              cursor: "pointer",
+              padding: 0,
+              fontFamily: "inherit",
+            }}
+          >
+            <RefreshCw size={11} />
+            <span>{isRTL ? "إعادة المحاولة" : "Retry"}</span>
+          </button>
+        )}
+      </div>
+
+      <div style={{ position: "relative" }}>
+        <select
+          name="storeCategoryId"
+          value={formData.storeCategoryId}
+          onChange={handleChange}
+          required
+          disabled={categoriesLoading || activeCategories.length === 0}
+          className="tamam-field"
+          style={{
+            ...selectStyle,
+            opacity:
+              categoriesLoading || activeCategories.length === 0 ? 0.7 : 1,
+            cursor:
+              categoriesLoading || activeCategories.length === 0
+                ? "not-allowed"
+                : "pointer",
+          }}
+        >
+          <option value="" style={optionStyle}>
+            {categoriesLoading
+              ? isRTL
+                ? "جاري تحميل التصنيفات..."
+                : "Loading categories..."
+              : activeCategories.length === 0
+                ? isRTL
+                  ? "لا توجد تصنيفات متاحة"
+                  : "No categories available"
+                : isRTL
+                  ? "اختر تصنيف المتجر"
+                  : "Select Store Category"}
+          </option>
+          {activeCategories.map((cat) => (
+            <option key={cat.id} value={cat.id} style={optionStyle}>
+              {isRTL ? cat.nameAr || cat.nameEn : cat.nameEn || cat.nameAr}
+            </option>
+          ))}
+        </select>
+        <ChevronDown
+          size={16}
+          style={{
+            position: "absolute",
+            top: "50%",
+            transform: "translateY(-50%)",
+            insetInlineEnd: "14px",
+            pointerEvents: "none",
+            color: c.textMuted,
+          }}
+        />
+      </div>
+
+      {selectedCategoryObj &&
+        (selectedCategoryObj.descriptionAr ||
+          selectedCategoryObj.descriptionEn) && (
+          <p
+            style={{
+              margin: "6px 2px 0",
+              fontSize: "12px",
+              color: c.textMuted,
+            }}
+          >
+            {isRTL
+              ? selectedCategoryObj.descriptionAr ||
+                selectedCategoryObj.descriptionEn
+              : selectedCategoryObj.descriptionEn ||
+                selectedCategoryObj.descriptionAr}
+          </p>
+        )}
+    </div>
+  );
 
   return (
     <div style={{ minHeight: "100vh" }}>
       <div
         style={{
-          maxWidth: "800px",
+          maxWidth: "860px",
           margin: "0 auto",
           padding: "100px 24px 80px",
         }}
       >
-        {/* Back Navigation */}
+        {/* Top Navigation Row */}
         <nav
           aria-label="Breadcrumb"
           style={{
-            marginBottom: "36px",
+            marginBottom: "32px",
             direction: dir,
-            display: "inline-block",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "12px",
           }}
         >
           <Link
@@ -228,9 +829,10 @@ const Partnership = () => {
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              padding: "8px 16px",
+              padding: "9px 16px",
               borderRadius: "12px",
-              ...glassStyle,
+              ...glassCardStyle,
+              boxShadow: "none",
               color: c.textMuted,
               textDecoration: "none",
               fontSize: "14px",
@@ -239,12 +841,14 @@ const Partnership = () => {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = ACCENT;
+              e.currentTarget.style.borderColor = c.badgeBorder;
               e.currentTarget.style.transform = `translateX(${
                 isRTL ? 4 : -4
               }px)`;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.color = c.textMuted;
+              e.currentTarget.style.borderColor = c.border;
               e.currentTarget.style.transform = "none";
             }}
           >
@@ -257,10 +861,10 @@ const Partnership = () => {
         <div
           style={{
             opacity: isVisible ? 1 : 0,
-            transform: isVisible ? "translateY(0)" : "translateY(20px)",
-            transition: "all 0.6s ease",
+            transform: isVisible ? "translateY(0)" : "translateY(18px)",
+            transition: "all 0.55s ease",
             direction: dir,
-            marginBottom: step === 1 || submitSuccess ? "48px" : "32px",
+            marginBottom: "36px",
           }}
         >
           <div
@@ -275,7 +879,7 @@ const Partnership = () => {
               color: ACCENT,
               fontSize: "13px",
               fontWeight: 700,
-              marginBottom: "20px",
+              marginBottom: "18px",
             }}
           >
             <Handshake size={14} style={{ flexShrink: 0 }} />
@@ -286,7 +890,7 @@ const Partnership = () => {
             style={{
               fontSize: "clamp(28px, 4vw, 40px)",
               fontWeight: 800,
-              color: darkMode ? "#f4f4f5" : "#09090b",
+              color: c.textStrong,
               letterSpacing: isRTL ? "0" : "-0.02em",
               lineHeight: 1.15,
               marginBottom: "12px",
@@ -294,7 +898,7 @@ const Partnership = () => {
           >
             {submitSuccess
               ? isRTL
-                ? "تم استلام طلبك!"
+                ? "تم استلام طلبك بنجاح!"
                 : "Application Received!"
               : step === 1
                 ? isRTL
@@ -308,10 +912,10 @@ const Partnership = () => {
           <p
             style={{
               fontSize: "15px",
-              color: darkMode ? "#a1a1aa" : "#52525b",
+              color: c.textMuted,
               lineHeight: 1.7,
               margin: 0,
-              maxWidth: "520px",
+              maxWidth: "560px",
             }}
           >
             {submitSuccess
@@ -323,8 +927,8 @@ const Partnership = () => {
                   ? "اختر نوع الشراكة المناسب لك وسنتواصل معك خلال 24 ساعة."
                   : "Choose your partnership type and we'll get back to you within 24 hours."
                 : isRTL
-                  ? `أنت تتقدم كـ ${partnerType === "store" ? "شريك متجر" : "عامل توصيل"}. املأ النموذج أدناه.`
-                  : `You're applying as a ${partnerType === "store" ? "Store Partner" : "Delivery Fleet"}. Fill in the form below.`}
+                  ? `أنت تتقدم كـ ${selectedOption?.title}. املأ البيانات المطلوبة أدناه.`
+                  : `You're applying as a ${selectedOption?.title}. Fill in the required details below.`}
           </p>
         </div>
 
@@ -335,56 +939,83 @@ const Partnership = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: "8px",
-              marginBottom: "40px",
+              gap: "12px",
+              marginBottom: "36px",
+              direction: dir,
               opacity: isVisible ? 1 : 0,
-              transform: isVisible ? "translateY(0)" : "translateY(16px)",
-              transition: "all 0.5s ease 0.15s",
+              transform: isVisible ? "translateY(0)" : "translateY(14px)",
+              transition: "all 0.5s ease 0.1s",
             }}
           >
-            {[1, 2].map((s) => (
-              <React.Fragment key={s}>
-                <div
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor:
-                      step >= s
-                        ? "var(--accent-500)"
-                        : darkMode
-                          ? "rgba(255,255,255,0.06)"
-                          : "rgba(0,0,0,0.06)",
-                    color:
-                      step >= s ? "#ffffff" : darkMode ? "#71717a" : "#a1a1aa",
-                    fontSize: "13px",
-                    fontWeight: 700,
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {step > s ? <CheckCircle2 size={14} /> : s}
-                </div>
-                {s < 2 && (
+            {[
+              {
+                num: 1,
+                label: isRTL ? "نوع الشراكة" : "Partner Role",
+              },
+              {
+                num: 2,
+                label: isRTL ? "بيانات الطلب" : "Application Form",
+              },
+            ].map((item, idx) => {
+              const isActive = step === item.num;
+              const isDone = step > item.num;
+              return (
+                <React.Fragment key={item.num}>
                   <div
                     style={{
-                      width: "40px",
-                      height: "2px",
-                      borderRadius: "1px",
-                      backgroundColor:
-                        step >= 2
-                          ? "var(--accent-500)"
-                          : darkMode
-                            ? "rgba(255,255,255,0.1)"
-                            : "rgba(0,0,0,0.1)",
-                      transition: "background-color 0.3s ease",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      padding: "8px 14px",
+                      borderRadius: "999px",
+                      background: isActive || isDone ? c.badgeBg : c.chipBg,
+                      border: `1px solid ${
+                        isActive || isDone ? c.badgeBorder : c.border
+                      }`,
+                      transition: "all 0.3s ease",
                     }}
-                  />
-                )}
-              </React.Fragment>
-            ))}
+                  >
+                    <span
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor:
+                          isActive || isDone ? ACCENT : c.borderStrong,
+                        color: "#ffffff",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {isDone ? <CheckCircle2 size={13} /> : item.num}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: isActive || isDone ? 700 : 500,
+                        color: isActive || isDone ? c.textStrong : c.textMuted,
+                      }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                  {idx === 0 && (
+                    <div
+                      style={{
+                        width: "36px",
+                        height: "2px",
+                        borderRadius: "2px",
+                        backgroundColor: step >= 2 ? ACCENT : c.borderStrong,
+                        transition: "background-color 0.3s ease",
+                      }}
+                    />
+                  )}
+                </React.Fragment>
+              );
+            })}
           </div>
         )}
 
@@ -393,11 +1024,11 @@ const Partnership = () => {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              gap: "16px",
+              gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+              gap: "18px",
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? "translateY(0)" : "translateY(20px)",
-              transition: "all 0.5s ease 0.25s",
+              transition: "all 0.5s ease 0.2s",
               direction: dir,
             }}
           >
@@ -406,17 +1037,13 @@ const Partnership = () => {
               return (
                 <button
                   key={option.type}
+                  type="button"
                   onClick={() => handleTypeSelect(option.type)}
                   style={{
-                    padding: "32px 24px",
-                    borderRadius: "20px",
-                    backgroundColor: darkMode
-                      ? "rgba(255,255,255,0.02)"
-                      : "rgba(255,255,255,0.8)",
-                    backdropFilter: "blur(20px)",
-                    border: darkMode
-                      ? "1px solid rgba(255,255,255,0.06)"
-                      : "1px solid rgba(0,0,0,0.06)",
+                    padding: "28px 24px",
+                    borderRadius: "22px",
+                    ...glassCardStyle,
+                    boxShadow: "none",
                     cursor: "pointer",
                     textAlign: isRTL ? "right" : "left",
                     transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -426,48 +1053,44 @@ const Partnership = () => {
                     fontFamily: "inherit",
                     opacity: isVisible ? 1 : 0,
                     transform: isVisible ? "translateY(0)" : "translateY(16px)",
-                    transitionDelay: `${0.3 + i * 0.1}s`,
+                    transitionDelay: `${0.15 + i * 0.08}s`,
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "translateY(-4px)";
-                    e.currentTarget.style.borderColor = darkMode
-                      ? "rgba(34,197,94,0.25)"
-                      : "rgba(34,197,94,0.2)";
-                    e.currentTarget.style.boxShadow = darkMode
-                      ? "0 16px 40px rgba(0,0,0,0.3)"
-                      : "0 16px 40px rgba(0,0,0,0.05)";
+                    e.currentTarget.style.borderColor = c.badgeBorder;
+                    e.currentTarget.style.boxShadow = c.shadow;
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.borderColor = darkMode
-                      ? "rgba(255,255,255,0.06)"
-                      : "rgba(0,0,0,0.06)";
+                    e.currentTarget.style.borderColor = c.border;
                     e.currentTarget.style.boxShadow = "none";
                   }}
                 >
                   <div
                     style={{
-                      width: "56px",
-                      height: "56px",
+                      width: "54px",
+                      height: "54px",
                       borderRadius: "16px",
-                      background: "var(--gradient-primary)",
+                      background:
+                        "var(--gradient-primary, linear-gradient(135deg, #22c55e, #16a34a))",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       boxShadow: darkMode
                         ? "0 8px 24px rgba(34,197,94,0.25)"
-                        : "0 8px 24px rgba(34,197,94,0.15)",
+                        : "0 8px 24px rgba(34,197,94,0.18)",
                     }}
                   >
-                    <Icon size={28} color="#ffffff" />
+                    <Icon size={26} color="#ffffff" />
                   </div>
+
                   <div>
                     <h3
                       style={{
                         fontSize: "18px",
                         fontWeight: 700,
-                        color: darkMode ? "#f4f4f5" : "#18181b",
-                        marginBottom: "6px",
+                        color: c.textStrong,
+                        marginBottom: "8px",
                       }}
                     >
                       {option.title}
@@ -475,19 +1098,21 @@ const Partnership = () => {
                     <p
                       style={{
                         fontSize: "13px",
-                        color: darkMode ? "#a1a1aa" : "#71717a",
-                        lineHeight: 1.5,
+                        color: c.textMuted,
+                        lineHeight: 1.6,
                         margin: 0,
                       }}
                     >
                       {option.description}
                     </p>
                   </div>
+
                   <div
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      gap: "6px",
+                      gap: "8px",
+                      paddingTop: "4px",
                     }}
                   >
                     {option.benefits.map((b, idx) => (
@@ -500,14 +1125,14 @@ const Partnership = () => {
                         }}
                       >
                         <CheckCircle2
-                          size={13}
-                          color="var(--accent-500)"
+                          size={14}
+                          color="var(--accent-500, #22c55e)"
                           style={{ flexShrink: 0 }}
                         />
                         <span
                           style={{
-                            fontSize: "12px",
-                            color: darkMode ? "#d4d4d8" : "#3f3f46",
+                            fontSize: "12.5px",
+                            color: c.text,
                             fontWeight: 500,
                           }}
                         >
@@ -516,24 +1141,25 @@ const Partnership = () => {
                       </div>
                     ))}
                   </div>
+
                   <div
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      gap: "6px",
+                      justifyContent: "space-between",
                       marginTop: "auto",
-                      paddingTop: "8px",
-                      color: "var(--accent-500)",
+                      paddingTop: "14px",
+                      borderTop: `1px solid ${c.divider}`,
+                      color: ACCENT,
                       fontSize: "13px",
-                      fontWeight: 600,
+                      fontWeight: 700,
                     }}
                   >
-                    <span>{isRTL ? "اختر هذا" : "Select this"}</span>
+                    <span>{isRTL ? "تقديم الطلب" : "Apply Now"}</span>
                     {isRTL ? (
-                      <ChevronLeft size={14} />
+                      <ChevronLeft size={15} />
                     ) : (
-                      <ChevronRight size={14} />
+                      <ChevronRight size={15} />
                     )}
                   </div>
                 </button>
@@ -548,466 +1174,774 @@ const Partnership = () => {
             onSubmit={handleSubmit}
             style={{
               opacity: isVisible ? 1 : 0,
-              transform: isVisible ? "translateY(0)" : "translateY(20px)",
-              transition: "all 0.5s ease 0.25s",
+              transform: isVisible ? "translateY(0)" : "translateY(18px)",
+              transition: "all 0.45s ease 0.1s",
               direction: dir,
               display: "flex",
               flexDirection: "column",
-              gap: "16px",
+              gap: "20px",
             }}
           >
-            {/* Error Alert */}
-            {submitError && (
+            {/* Selected Role Summary Banner with Step-Back Action */}
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "12px",
+                padding: "16px 20px",
+                borderRadius: "18px",
+                ...glassCardStyle,
+                boxShadow: "none",
+              }}
+            >
               <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
+                <div
+                  style={{
+                    width: "42px",
+                    height: "42px",
+                    borderRadius: "12px",
+                    background:
+                      "var(--gradient-primary, linear-gradient(135deg, #22c55e, #16a34a))",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <SelectedIcon size={20} color="#ffffff" />
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 600,
+                      color: c.textFaint,
+                      textTransform: "uppercase",
+                      letterSpacing: isRTL ? "0" : "0.04em",
+                    }}
+                  >
+                    {isRTL ? "الشراكة المختارة" : "Selected Partnership"}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 700,
+                      color: c.textStrong,
+                    }}
+                  >
+                    {selectedOption?.title}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleBack}
                 style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "8px 14px",
+                  borderRadius: "10px",
+                  backgroundColor: c.chipBg,
+                  border: `1px solid ${c.border}`,
+                  color: c.text,
+                  cursor: "pointer",
+                  fontSize: "12.5px",
+                  fontWeight: 600,
+                  fontFamily: "inherit",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = c.badgeBorder;
+                  e.currentTarget.style.color = ACCENT;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = c.border;
+                  e.currentTarget.style.color = c.text;
+                }}
+              >
+                {isRTL ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+                <span>{isRTL ? "تغيير النوع" : "Change Role"}</span>
+              </button>
+            </div>
+
+            {/* Error Alert */}
+            {activeError && (
+              <div
+                role="alert"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
                   padding: "14px 18px",
                   borderRadius: "14px",
                   backgroundColor: darkMode
-                    ? "rgba(239,68,68,0.1)"
-                    : "rgba(239,68,68,0.05)",
+                    ? "rgba(239,68,68,0.12)"
+                    : "rgba(239,68,68,0.06)",
                   border: darkMode
-                    ? "1px solid rgba(239,68,68,0.2)"
-                    : "1px solid rgba(239,68,68,0.1)",
+                    ? "1px solid rgba(239,68,68,0.28)"
+                    : "1px solid rgba(239,68,68,0.2)",
                   color: darkMode ? "#fca5a5" : "#dc2626",
                   fontSize: "13px",
-                  fontWeight: 500,
-                  direction: dir,
+                  fontWeight: 600,
                 }}
               >
-                {submitError}
+                <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                <span>{activeError}</span>
               </div>
             )}
 
-            {/* Back to selection */}
-            <button
-              type="button"
-              onClick={handleBack}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                color: darkMode ? "#a1a1aa" : "#71717a",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "13px",
-                fontWeight: 500,
-                padding: "0",
-                fontFamily: "inherit",
-                direction: dir,
-              }}
-            >
-              {isRTL ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-              <span>
-                {isRTL ? "تغيير نوع الشراكة" : "Change partnership type"}
-              </span>
-            </button>
-
+            {/* Main Form Card */}
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-                gap: "14px",
-                direction: dir,
+                padding: "28px",
+                borderRadius: "22px",
+                ...glassCardStyle,
+                display: "flex",
+                flexDirection: "column",
+                gap: "24px",
               }}
             >
-              {/* Business Name */}
+              {/* Section 1: Contact Information */}
               <div>
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    color: darkMode ? "#d4d4d8" : "#3f3f46",
-                    marginBottom: "6px",
-                  }}
-                >
-                  <Building2 size={12} style={{ flexShrink: 0 }} />
+                <div style={sectionHeaderStyle}>
+                  <User size={15} color="var(--accent-500, #22c55e)" />
                   <span>
-                    {isRTL ? "اسم الشركة / المتجر" : "Business / Store Name"} *
+                    {isRTL ? "بيانات التواصل" : "Contact Information"}
                   </span>
-                </label>
-                <input
-                  type="text"
-                  name="businessName"
-                  value={formData.businessName}
-                  onChange={handleChange}
-                  required
-                  style={inputStyle}
-                />
-              </div>
+                </div>
 
-              {/* Owner Name */}
-              <div>
-                <label
+                <div
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    color: darkMode ? "#d4d4d8" : "#3f3f46",
-                    marginBottom: "6px",
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                    gap: "16px",
                   }}
                 >
-                  <User size={12} style={{ flexShrink: 0 }} />
-                  <span>
-                    {isRTL ? "اسم المالك / المسؤول" : "Owner / Manager Name"} *
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  name="ownerName"
-                  value={formData.ownerName}
-                  onChange={handleChange}
-                  required
-                  style={inputStyle}
-                />
-              </div>
+                  {partnerType === "store" ? (
+                    <div>
+                      <label style={labelStyle}>
+                        <User size={12} style={{ flexShrink: 0 }} />
+                        <span>
+                          {isRTL
+                            ? "اسم المالك / المسؤول"
+                            : "Owner / Manager Name"}{" "}
+                          *
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        name="ownerName"
+                        value={formData.ownerName}
+                        onChange={handleChange}
+                        required
+                        className="tamam-field"
+                        style={inputStyle}
+                        placeholder={
+                          isRTL ? "أدخل اسم المالك" : "Enter owner full name"
+                        }
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <label style={labelStyle}>
+                        <User size={12} style={{ flexShrink: 0 }} />
+                        <span>{isRTL ? "الاسم الكامل" : "Full Name"} *</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        required
+                        className="tamam-field"
+                        style={inputStyle}
+                        placeholder={
+                          isRTL ? "أدخل الاسم الكامل" : "Enter your full name"
+                        }
+                      />
+                    </div>
+                  )}
 
-              {/* Phone */}
-              <div>
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    color: darkMode ? "#d4d4d8" : "#3f3f46",
-                    marginBottom: "6px",
-                  }}
-                >
-                  <Phone
-                    size={12}
-                    style={{
-                      flexShrink: 0,
-                      transform: isRTL ? "scaleX(-1)" : "none",
-                    }}
-                  />
-                  <span>{isRTL ? "رقم الهاتف" : "Phone Number"} *</span>
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                  style={inputStyle}
-                />
-              </div>
-
-              {/* Email */}
-              <div>
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    color: darkMode ? "#d4d4d8" : "#3f3f46",
-                    marginBottom: "6px",
-                  }}
-                >
-                  <Mail size={12} style={{ flexShrink: 0 }} />
-                  <span>{isRTL ? "البريد الإلكتروني" : "Email Address"} *</span>
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  style={inputStyle}
-                />
-              </div>
-
-              {/* City */}
-              <div>
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    color: darkMode ? "#d4d4d8" : "#3f3f46",
-                    marginBottom: "6px",
-                  }}
-                >
-                  <MapPin size={12} style={{ flexShrink: 0 }} />
-                  <span>{isRTL ? "المدينة" : "City"} *</span>
-                </label>
-                <input
-                  type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  required
-                  style={inputStyle}
-                />
-              </div>
-
-              {/* Address */}
-              <div>
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    color: darkMode ? "#d4d4d8" : "#3f3f46",
-                    marginBottom: "6px",
-                  }}
-                >
-                  <MapPin size={12} style={{ flexShrink: 0 }} />
-                  <span>{isRTL ? "العنوان التفصيلي" : "Full Address"} *</span>
-                </label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  required
-                  style={inputStyle}
-                />
-              </div>
-            </div>
-
-            {/* Store Types */}
-            {partnerType === "store" && (
-              <div>
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    color: darkMode ? "#d4d4d8" : "#3f3f46",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <Store size={12} style={{ flexShrink: 0 }} />
-                  <span>
-                    {isRTL
-                      ? "نوع النشاط (يمكنك اختيار أكثر من نوع)"
-                      : "Business Categories (select all that apply)"}{" "}
-                    *
-                  </span>
-                </label>
-                {typesLoading ? (
-                  <div
-                    style={{
-                      color: darkMode ? "#71717a" : "#a1a1aa",
-                      fontSize: "13px",
-                      padding: "12px 0",
-                    }}
-                  >
-                    {isRTL
-                      ? "جاري تحميل التصنيفات..."
-                      : "Loading categories..."}
+                  <div>
+                    <label style={labelStyle}>
+                      <Phone
+                        size={12}
+                        style={{
+                          flexShrink: 0,
+                          transform: isRTL ? "scaleX(-1)" : "none",
+                        }}
+                      />
+                      <span>{isRTL ? "رقم الهاتف" : "Phone Number"} *</span>
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      required
+                      className="tamam-field"
+                      style={{ ...inputStyle, direction: "ltr" }}
+                      placeholder="01xxxxxxxxx"
+                    />
                   </div>
-                ) : storeTypes.length > 0 ? (
+
+                  <div>
+                    <label style={labelStyle}>
+                      <Mail size={12} style={{ flexShrink: 0 }} />
+                      <span>
+                        {isRTL ? "البريد الإلكتروني" : "Email Address"}
+                      </span>
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="tamam-field"
+                      style={{ ...inputStyle, direction: "ltr" }}
+                      placeholder="name@example.com"
+                    />
+                  </div>
+
+                  {renderCitySelect()}
+                </div>
+              </div>
+
+              {/* Section 2: Supervisor Assigned Area */}
+              {partnerType === "supervisor" && (
+                <div>
+                  <div style={sectionHeaderStyle}>
+                    <Map size={15} color="var(--accent-500, #22c55e)" />
+                    <span>{isRTL ? "منطقة الإشراف" : "Assigned Area"}</span>
+                  </div>
+
                   <div
                     style={{
                       display: "grid",
                       gridTemplateColumns:
-                        "repeat(auto-fit, minmax(140px, 1fr))",
-                      gap: "8px",
+                        "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: "16px",
                     }}
                   >
-                    {storeTypes.map((type) => {
-                      const isSelected =
-                        formData.selectedTypes?.includes(type.id) || false;
-                      return (
-                        <button
-                          key={type.id}
-                          type="button"
-                          onClick={() => {
-                            const current = formData.selectedTypes || [];
-                            const updated = isSelected
-                              ? current.filter((id) => id !== type.id)
-                              : [...current, type.id];
-                            setFormData({
-                              ...formData,
-                              selectedTypes: updated,
-                              category:
-                                updated.length > 0 ? updated.join(",") : "",
-                            });
-                          }}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            padding: "10px 14px",
-                            borderRadius: "12px",
-                            border: isSelected
-                              ? "2px solid var(--accent-500)"
-                              : darkMode
-                                ? "1px solid rgba(255,255,255,0.1)"
-                                : "1px solid rgba(0,0,0,0.1)",
-                            backgroundColor: isSelected
-                              ? darkMode
-                                ? "rgba(34,197,94,0.15)"
-                                : "rgba(34,197,94,0.08)"
-                              : "transparent",
-                            color: isSelected
-                              ? "var(--accent-500)"
-                              : darkMode
-                                ? "#d4d4d8"
-                                : "#3f3f46",
-                            cursor: "pointer",
-                            fontSize: "12px",
-                            fontWeight: isSelected ? 600 : 500,
-                            fontFamily: "inherit",
-                            transition: "all 0.2s ease",
-                            direction: dir,
-                          }}
+                    {renderAreaSelect()}
+                  </div>
+                </div>
+              )}
+
+              {/* Section 2: Store Details */}
+              {partnerType === "store" && (
+                <div>
+                  <div style={sectionHeaderStyle}>
+                    <Store size={15} color="var(--accent-500, #22c55e)" />
+                    <span>{isRTL ? "بيانات المتجر" : "Store Details"}</span>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: "16px",
+                    }}
+                  >
+                    <div>
+                      <label style={labelStyle}>
+                        <Building2 size={12} style={{ flexShrink: 0 }} />
+                        <span>
+                          {isRTL
+                            ? "اسم المتجر (بالعربية)"
+                            : "Store Name (Arabic)"}{" "}
+                          *
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        name="storeNameAr"
+                        value={formData.storeNameAr}
+                        onChange={handleChange}
+                        required
+                        className="tamam-field"
+                        style={inputStyle}
+                        placeholder={
+                          isRTL ? "مثال: مطعم تمام" : "Arabic store name"
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <label style={labelStyle}>
+                        <Building2 size={12} style={{ flexShrink: 0 }} />
+                        <span>
+                          {isRTL
+                            ? "اسم المتجر (بالإنجليزية)"
+                            : "Store Name (English)"}{" "}
+                          *
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        name="storeNameEn"
+                        value={formData.storeNameEn}
+                        onChange={handleChange}
+                        required
+                        className="tamam-field"
+                        style={{ ...inputStyle, direction: "ltr" }}
+                        placeholder="e.g. Tamam Restaurant"
+                      />
+                    </div>
+
+                    {renderCategorySelect()}
+
+                    <div>
+                      <label style={labelStyle}>
+                        <MapPin size={12} style={{ flexShrink: 0 }} />
+                        <span>
+                          {isRTL ? "العنوان التفصيلي" : "Street / Address"} *
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        required
+                        className="tamam-field"
+                        style={inputStyle}
+                        placeholder={
+                          isRTL
+                            ? "اسم الشارع والمنطقة"
+                            : "Street name & landmark"
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  {/* Optional Store Location Detection */}
+                  <div
+                    style={{
+                      marginTop: "16px",
+                      padding: "12px 16px",
+                      borderRadius: "14px",
+                      backgroundColor: c.chipBg,
+                      border: `1px solid ${c.border}`,
+                      display: "flex",
+                      flexWrap: "wrap",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: "12px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        fontSize: "12.5px",
+                        color: c.textMuted,
+                      }}
+                    >
+                      <Navigation
+                        size={14}
+                        color="var(--accent-500, #22c55e)"
+                      />
+                      <span>
+                        {formData.latitude !== null &&
+                        formData.longitude !== null
+                          ? isRTL
+                            ? `تم تحديد الإحداثيات (${formData.latitude}, ${formData.longitude})`
+                            : `Location captured (${formData.latitude}, ${formData.longitude})`
+                          : isRTL
+                            ? "تحديد موقع المتجر على الخريطة (اختياري)"
+                            : "Pin store coordinates on map (optional)"}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleDetectLocation}
+                      disabled={geoLoading}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        padding: "7px 14px",
+                        borderRadius: "10px",
+                        backgroundColor: c.badgeBg,
+                        border: `1px solid ${c.badgeBorder}`,
+                        color: ACCENT,
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        cursor: geoLoading ? "wait" : "pointer",
+                        fontFamily: "inherit",
+                      }}
+                    >
+                      <Navigation size={12} />
+                      <span>
+                        {geoLoading
+                          ? isRTL
+                            ? "جاري التحديد..."
+                            : "Detecting..."
+                          : isRTL
+                            ? "تحديد تلقائي"
+                            : "Auto-detect"}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Section 2: Courier Vehicle Details */}
+              {partnerType === "courier" && (
+                <div>
+                  <div style={sectionHeaderStyle}>
+                    <Truck size={15} color="var(--accent-500, #22c55e)" />
+                    <span>
+                      {isRTL
+                        ? "بيانات المركبة والمنطقة"
+                        : "Vehicle & Area Details"}
+                    </span>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: "16px",
+                    }}
+                  >
+                    <div>
+                      <label style={labelStyle}>
+                        <Truck size={12} style={{ flexShrink: 0 }} />
+                        <span>{isRTL ? "نوع المركبة" : "Vehicle Type"} *</span>
+                      </label>
+                      <div style={{ position: "relative" }}>
+                        <select
+                          name="vehicleType"
+                          value={formData.vehicleType}
+                          onChange={handleChange}
+                          required
+                          className="tamam-field"
+                          style={selectStyle}
                         >
-                          {type.iconUrl ? (
-                            <img
-                              src={type.iconUrl}
-                              alt=""
-                              style={{
-                                width: "20px",
-                                height: "20px",
-                                borderRadius: "4px",
-                              }}
-                            />
-                          ) : (
-                            <Store size={14} style={{ flexShrink: 0 }} />
-                          )}
-                          <span>{isRTL ? type.nameAr : type.nameEn}</span>
-                          {isSelected && (
-                            <CheckCircle2
-                              size={14}
-                              style={{
-                                marginInlineStart: "auto",
-                                flexShrink: 0,
-                              }}
-                            />
-                          )}
-                        </button>
-                      );
-                    })}
+                          <option value="" style={optionStyle}>
+                            {isRTL ? "اختر نوع المركبة" : "Select Vehicle Type"}
+                          </option>
+                          <option value="Motorcycle" style={optionStyle}>
+                            {isRTL ? "دراجة نارية" : "Motorcycle"}
+                          </option>
+                          <option value="Car" style={optionStyle}>
+                            {isRTL ? "سيارة" : "Car"}
+                          </option>
+                          <option value="Bicycle" style={optionStyle}>
+                            {isRTL ? "دراجة هوائية" : "Bicycle"}
+                          </option>
+                          <option value="Van" style={optionStyle}>
+                            {isRTL ? "فان" : "Van"}
+                          </option>
+                        </select>
+                        <ChevronDown
+                          size={16}
+                          style={{
+                            position: "absolute",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            insetInlineEnd: "14px",
+                            pointerEvents: "none",
+                            color: c.textMuted,
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={labelStyle}>
+                        <FileText size={12} style={{ flexShrink: 0 }} />
+                        <span>
+                          {isRTL ? "رقم لوحة المركبة" : "Vehicle Plate Number"}{" "}
+                          *
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        name="vehiclePlate"
+                        value={formData.vehiclePlate}
+                        onChange={handleChange}
+                        required
+                        className="tamam-field"
+                        style={inputStyle}
+                        placeholder={
+                          isRTL ? "مثال: أ ب ج 1234" : "e.g. ABC 1234"
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <label style={labelStyle}>
+                        <FileText size={12} style={{ flexShrink: 0 }} />
+                        <span>
+                          {isRTL
+                            ? "رقم رخصة القيادة (اختياري)"
+                            : "License Number (Optional)"}
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        name="licenseNumber"
+                        value={formData.licenseNumber}
+                        onChange={handleChange}
+                        className="tamam-field"
+                        style={inputStyle}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={labelStyle}>
+                        <Calendar size={12} style={{ flexShrink: 0 }} />
+                        <span>
+                          {isRTL
+                            ? "تاريخ انتهاء الرخصة (اختياري)"
+                            : "License Expiry Date (Optional)"}
+                        </span>
+                      </label>
+                      <input
+                        type="date"
+                        name="licenseExpiresAt"
+                        value={formData.licenseExpiresAt}
+                        onChange={handleChange}
+                        className="tamam-field"
+                        style={{ ...inputStyle, direction: "ltr" }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={labelStyle}>
+                        <MapPin size={12} style={{ flexShrink: 0 }} />
+                        <span>
+                          {isRTL ? "المنطقة (اختياري)" : "Area (Optional)"}
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        name="area"
+                        value={formData.area}
+                        onChange={handleChange}
+                        className="tamam-field"
+                        style={inputStyle}
+                        placeholder={
+                          isRTL ? "الحي أو المنطقة" : "Neighborhood / District"
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Section 3: Description / Notes */}
+              <div>
+                <div style={sectionHeaderStyle}>
+                  <FileText size={15} color="var(--accent-500, #22c55e)" />
+                  <span>
+                    {partnerType === "store"
+                      ? isRTL
+                        ? "وصف النشاط والملاحظات"
+                        : "Business Description & Notes"
+                      : isRTL
+                        ? "ملاحظات إضافية"
+                        : "Additional Notes"}
+                  </span>
+                </div>
+
+                {partnerType === "store" ? (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: "16px",
+                    }}
+                  >
+                    <div>
+                      <label style={labelStyle}>
+                        <span>
+                          {isRTL
+                            ? "وصف المتجر (بالعربية)"
+                            : "Store Description (Arabic)"}
+                        </span>
+                      </label>
+                      <textarea
+                        name="storeDescriptionAr"
+                        value={formData.storeDescriptionAr}
+                        onChange={handleChange}
+                        rows={3}
+                        className="tamam-field"
+                        style={{
+                          ...inputStyle,
+                          resize: "vertical",
+                          minHeight: "90px",
+                        }}
+                        placeholder={
+                          isRTL
+                            ? "نبذة عن منتجاتك أو خدماتك..."
+                            : "Brief Arabic description..."
+                        }
+                      />
+                    </div>
+
+                    <div>
+                      <label style={labelStyle}>
+                        <span>
+                          {isRTL
+                            ? "وصف المتجر (بالإنجليزية)"
+                            : "Store Description (English)"}
+                        </span>
+                      </label>
+                      <textarea
+                        name="storeDescriptionEn"
+                        value={formData.storeDescriptionEn}
+                        onChange={handleChange}
+                        rows={3}
+                        className="tamam-field"
+                        style={{
+                          ...inputStyle,
+                          direction: "ltr",
+                          resize: "vertical",
+                          minHeight: "90px",
+                        }}
+                        placeholder="Brief English description..."
+                      />
+                    </div>
                   </div>
                 ) : (
-                  <div>
-                    <input
-                      type="text"
-                      name="category"
-                      value={formData.category}
-                      onChange={handleChange}
-                      required
-                      placeholder={
-                        isRTL
-                          ? "مثال: مطعم، بقالة، صيدلية..."
-                          : "e.g. Restaurant, Grocery, Pharmacy..."
-                      }
-                      style={inputStyle}
-                    />
-                  </div>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows={4}
+                    className="tamam-field"
+                    style={{
+                      ...inputStyle,
+                      resize: "vertical",
+                      minHeight: "100px",
+                    }}
+                    placeholder={
+                      isRTL
+                        ? "أخبرنا بالمزيد عن خبرتك أو أي تفاصيل إضافية..."
+                        : "Tell us more about your experience or any extra details..."
+                    }
+                  />
                 )}
               </div>
-            )}
 
-            {/* Description */}
-            <div>
-              <label
+              {/* Footer Actions: Step-Back + Submit */}
+              <div
                 style={{
                   display: "flex",
+                  flexWrap: "wrap",
                   alignItems: "center",
-                  gap: "6px",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  color: darkMode ? "#d4d4d8" : "#3f3f46",
-                  marginBottom: "6px",
+                  justifyContent: "space-between",
+                  gap: "12px",
+                  paddingTop: "16px",
+                  borderTop: `1px solid ${c.divider}`,
                 }}
               >
-                <FileText size={12} style={{ flexShrink: 0 }} />
-                <span>
-                  {isRTL ? "وصف مختصر عن النشاط" : "Brief Description"} *
-                </span>
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                required
-                rows={4}
-                style={{
-                  ...inputStyle,
-                  resize: "vertical",
-                  minHeight: "100px",
-                }}
-              />
-            </div>
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  disabled={isSubmitting}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "13px 20px",
+                    borderRadius: "14px",
+                    backgroundColor: c.chipBg,
+                    border: `1px solid ${c.border}`,
+                    color: c.text,
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    cursor: isSubmitting ? "not-allowed" : "pointer",
+                    fontFamily: "inherit",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  {isRTL ? (
+                    <ChevronRight size={16} />
+                  ) : (
+                    <ChevronLeft size={16} />
+                  )}
+                  <span>{isRTL ? "السابق" : "Step Back"}</span>
+                </button>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
-                padding: "14px 28px",
-                borderRadius: "14px",
-                backgroundColor: isSubmitting
-                  ? darkMode
-                    ? "#374151"
-                    : "#9ca3af"
-                  : "var(--accent-500)",
-                color: "#ffffff",
-                fontSize: "15px",
-                fontWeight: 600,
-                border: "none",
-                cursor: isSubmitting ? "not-allowed" : "pointer",
-                transition: "all 0.2s ease",
-                marginTop: "8px",
-                fontFamily: "inherit",
-                opacity: isSubmitting ? 0.7 : 1,
-              }}
-              onMouseEnter={(e) => {
-                if (!isSubmitting) {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = darkMode
-                    ? "0 8px 24px rgba(34,197,94,0.3)"
-                    : "0 8px 24px rgba(34,197,94,0.2)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              {isSubmitting ? (
-                <>
-                  <span
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                      border: "2px solid rgba(255,255,255,0.3)",
-                      borderTopColor: "#fff",
-                      borderRadius: "50%",
-                      animation: "spin 0.6s linear infinite",
-                    }}
-                  />
-                  <span>{isRTL ? "جاري الإرسال..." : "Submitting..."}</span>
-                </>
-              ) : (
-                <>
-                  <Send size={16} />
-                  <span>{isRTL ? "إرسال الطلب" : "Submit Application"}</span>
-                </>
-              )}
-            </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  style={{
+                    flex: "1 1 220px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    padding: "14px 28px",
+                    borderRadius: "14px",
+                    background: isSubmitting
+                      ? darkMode
+                        ? "#374151"
+                        : "#9ca3af"
+                      : "var(--gradient-primary, linear-gradient(135deg, #22c55e, #16a34a))",
+                    color: "#ffffff",
+                    fontSize: "15px",
+                    fontWeight: 700,
+                    border: "none",
+                    cursor: isSubmitting ? "not-allowed" : "pointer",
+                    transition: "all 0.2s ease",
+                    fontFamily: "inherit",
+                    opacity: isSubmitting ? 0.75 : 1,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSubmitting) {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = darkMode
+                        ? "0 10px 28px rgba(34,197,94,0.32)"
+                        : "0 10px 28px rgba(34,197,94,0.22)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                          border: "2px solid rgba(255,255,255,0.3)",
+                          borderTopColor: "#fff",
+                          borderRadius: "50%",
+                          animation: "spin 0.6s linear infinite",
+                        }}
+                      />
+                      <span>{isRTL ? "جاري الإرسال..." : "Submitting..."}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send size={16} />
+                      <span>
+                        {isRTL ? "إرسال طلب الشراكة" : "Submit Application"}
+                      </span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           </form>
         )}
 
@@ -1015,94 +1949,134 @@ const Partnership = () => {
         {submitSuccess && (
           <div
             style={{
-              padding: "60px 20px",
+              padding: "56px 24px",
               textAlign: "center",
-              borderRadius: "20px",
-              border: darkMode
-                ? "1px solid rgba(255,255,255,0.06)"
-                : "1px solid rgba(0,0,0,0.06)",
-              backgroundColor: darkMode
-                ? "rgba(255,255,255,0.02)"
-                : "rgba(255,255,255,0.8)",
-              backdropFilter: "blur(20px)",
+              borderRadius: "24px",
+              ...glassCardStyle,
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? "translateY(0)" : "translateY(20px)",
-              transition: "all 0.5s ease 0.25s",
+              transition: "all 0.5s ease 0.15s",
               direction: dir,
             }}
           >
             <div
               style={{
-                width: "64px",
-                height: "64px",
-                borderRadius: "18px",
-                background: "var(--gradient-primary)",
+                width: "68px",
+                height: "68px",
+                borderRadius: "20px",
+                background:
+                  "var(--gradient-primary, linear-gradient(135deg, #22c55e, #16a34a))",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                margin: "0 auto 20px",
+                margin: "0 auto 22px",
                 boxShadow: darkMode
-                  ? "0 12px 32px rgba(34,197,94,0.3)"
-                  : "0 12px 32px rgba(34,197,94,0.2)",
+                  ? "0 12px 32px rgba(34,197,94,0.32)"
+                  : "0 12px 32px rgba(34,197,94,0.22)",
               }}
             >
-              <CheckCircle2 size={32} color="#ffffff" />
+              <CheckCircle2 size={34} color="#ffffff" />
             </div>
+
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "5px 12px",
+                borderRadius: "999px",
+                backgroundColor: c.badgeBg,
+                border: `1px solid ${c.badgeBorder}`,
+                color: ACCENT,
+                fontSize: "12px",
+                fontWeight: 700,
+                marginBottom: "14px",
+              }}
+            >
+              <SelectedIcon size={13} />
+              <span>{selectedOption?.title}</span>
+            </div>
+
             <h2
               style={{
-                fontSize: "22px",
-                fontWeight: 700,
-                color: darkMode ? "#f4f4f5" : "#18181b",
-                marginBottom: "8px",
+                fontSize: "24px",
+                fontWeight: 800,
+                color: c.textStrong,
+                marginBottom: "10px",
               }}
             >
-              {isRTL ? "تم استلام طلبك!" : "Application Received!"}
+              {isRTL ? "تم استلام طلبك بنجاح!" : "Application Received!"}
             </h2>
             <p
               style={{
-                fontSize: "14px",
-                color: darkMode ? "#a1a1aa" : "#71717a",
-                maxWidth: "400px",
+                fontSize: "14.5px",
+                color: c.textMuted,
+                maxWidth: "430px",
+                lineHeight: 1.7,
                 margin: "0 auto 32px",
               }}
             >
               {isRTL
-                ? "شكراً لك! سنراجع طلبك ونتواصل معك خلال 24 ساعة عمل لمناقشة الخطوات التالية."
-                : "Thank you! We'll review your application and get back to you within 24 business hours to discuss the next steps."}
+                ? "شكراً لك! سيقوم فريقنا بمراجعة بياناتك والتواصل معك خلال 24 ساعة عمل لإتمام الخطوات التالية."
+                : "Thank you! Our team will review your application and contact you within 24 business hours to complete the next steps."}
             </p>
 
-            <button
-              onClick={handleReset}
+            <div
               style={{
-                display: "inline-flex",
+                display: "flex",
+                flexWrap: "wrap",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: "8px",
-                padding: "12px 32px",
-                borderRadius: "14px",
-                backgroundColor: "var(--accent-500)",
-                color: "#ffffff",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "15px",
-                fontWeight: 600,
-                transition: "all 0.2s ease",
-                fontFamily: "inherit",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = darkMode
-                  ? "0 8px 24px rgba(34,197,94,0.3)"
-                  : "0 8px 24px rgba(34,197,94,0.2)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
+                gap: "12px",
               }}
             >
-              <CheckCircle2 size={18} />
-              <span>{isRTL ? "موافق" : "OK"}</span>
-            </button>
+              <button
+                type="button"
+                onClick={handleReset}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                  padding: "12px 26px",
+                  borderRadius: "14px",
+                  background:
+                    "var(--gradient-primary, linear-gradient(135deg, #22c55e, #16a34a))",
+                  color: "#ffffff",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  fontFamily: "inherit",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <CheckCircle2 size={17} />
+                <span>
+                  {isRTL ? "تقديم طلب جديد" : "Submit Another Application"}
+                </span>
+              </button>
+
+              <Link
+                to="/"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                  padding: "12px 24px",
+                  borderRadius: "14px",
+                  backgroundColor: c.chipBg,
+                  border: `1px solid ${c.border}`,
+                  color: c.text,
+                  textDecoration: "none",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                }}
+              >
+                <span>{isRTL ? "العودة للرئيسية" : "Back to Home"}</span>
+              </Link>
+            </div>
           </div>
         )}
       </div>
@@ -1110,6 +2084,14 @@ const Partnership = () => {
       <style>{`
         @keyframes spin {
           to { transform: rotate(360deg); }
+        }
+        .tamam-field:focus {
+          border-color: var(--accent-500, #22c55e) !important;
+          box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.14);
+        }
+        .tamam-field::placeholder {
+          color: ${c.textFaint};
+          opacity: 0.85;
         }
       `}</style>
     </div>

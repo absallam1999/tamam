@@ -19,6 +19,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { useLanguage } from "../../contexts/LangContext";
 import { useAllStores } from "../../hooks/useBrowse";
 import { useTranslation } from "react-i18next";
+import resolveMediaUrl from "../../utils/resolveMediaUrl";
 
 /* =========================================================
    APP DOWNLOAD LINKS
@@ -190,7 +191,12 @@ const Stores = () => {
     const street = isRTL
       ? store.streetAr || store.streetEn
       : store.streetEn || store.streetAr;
-    const parts = [street, store.city].filter(Boolean);
+
+    const city = isRTL
+      ? store.cityAr || store.cityEn
+      : store.cityEn || store.cityAr;
+
+    const parts = [street, city].filter(Boolean);
     return parts.join(" • ");
   };
 
@@ -720,9 +726,11 @@ const Stores = () => {
                 <option
                   key={city.id}
                   value={city.id}
-                  style={{ backgroundColor: c.surfaceSolid, color: c.text }}
+                  style={{ background: c.surfaceSolid }}
                 >
-                  {city.name}
+                  {isRTL
+                    ? city.nameAr || city.nameEn || city.name || ""
+                    : city.nameEn || city.nameAr || city.name || ""}
                 </option>
               ))}
             </select>
@@ -987,27 +995,63 @@ const Stores = () => {
                       overflow: "hidden",
                     }}
                   >
-                    {store.coverUrl ? (
-                      <img
-                        src={store.coverUrl}
-                        alt={getStoreName(store)}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <Store
-                        size={40}
-                        style={{
-                          color: darkMode ? "#52525b" : "rgba(5,150,105,0.4)",
-                        }}
-                      />
-                    )}
+                    {(() => {
+                      const coverUrl = resolveMediaUrl(store.coverImageUrl);
+                      const logoUrl = resolveMediaUrl(store.logoUrl);
+
+                      if (coverUrl) {
+                        return (
+                          <img
+                            src={coverUrl}
+                            alt={getStoreName(store)}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                            onError={(e) => {
+                              // Fall back to logo, then to the generic Store icon
+                              const el = e.currentTarget;
+                              if (logoUrl && el.dataset.fallback !== "logo") {
+                                el.dataset.fallback = "logo";
+                                el.src = logoUrl;
+                                el.style.objectFit = "contain";
+                                el.style.padding = "12px";
+                                return;
+                              }
+                              el.style.display = "none";
+                            }}
+                          />
+                        );
+                      }
+
+                      if (logoUrl) {
+                        return (
+                          <img
+                            src={logoUrl}
+                            alt={getStoreName(store)}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "contain",
+                              padding: "12px",
+                            }}
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        );
+                      }
+
+                      return (
+                        <Store
+                          size={40}
+                          style={{
+                            color: darkMode ? "#52525b" : "rgba(5,150,105,0.4)",
+                          }}
+                        />
+                      );
+                    })()}
 
                     <div
                       style={{

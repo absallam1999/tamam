@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   Star,
@@ -17,6 +17,7 @@ import { useLanguage } from "../../contexts/LangContext";
 import { apiClient } from "../../lib/api-client";
 import { useTranslation } from "react-i18next";
 import SEO from "../../SEO";
+import resolveMediaUrl from "../../utils/resolveMediaUrl";
 
 /* =========================================================
    APP DOWNLOAD LINKS
@@ -122,7 +123,7 @@ function trimTime(timeStr) {
   return `${parts[0].padStart(2, "0")}:${parts[1].padStart(2, "0")}`;
 }
 
-/** Store type / menu category label — works for strings AND objects. */
+/** Store type / menu category / city label — works for strings AND objects. */
 function localizedLabel(item, isRTL) {
   if (item == null) return null;
   if (typeof item === "string") return item;
@@ -150,6 +151,7 @@ const StoreDetail = () => {
   const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [imgStage, setImgStage] = useState("cover"); // "cover" | "logo" | "fallback"
 
   useEffect(() => {
     const check = () => {
@@ -175,6 +177,7 @@ const StoreDetail = () => {
     const fetchStore = async () => {
       setLoading(true);
       setError(null);
+      setImgStage("cover");
       try {
         const response = await apiClient.get(`/api/browse/stores/${id}`);
         const parsed = extractStore(response);
@@ -469,16 +472,22 @@ const StoreDetail = () => {
   }
 
   /* ---------- Derived values from the store ---------- */
-  const storeName = isRTL
-    ? store.nameAr || store.nameEn
-    : store.nameEn || store.nameAr;
+  const storeName =
+    (isRTL ? store.nameAr || store.nameEn : store.nameEn || store.nameAr) || "";
   const storeDescription = isRTL
     ? store.descriptionAr || store.descriptionEn
     : store.descriptionEn || store.descriptionAr;
   const storeStreet = isRTL
     ? store.streetAr || store.streetEn
     : store.streetEn || store.streetAr;
-  const fullAddress = [storeStreet, store.city].filter(Boolean).join(" • ");
+  const storeCity =
+    (isRTL ? store.cityAr || store.cityEn : store.cityEn || store.cityAr) ||
+    localizedLabel(store.city, isRTL) ||
+    null;
+  const fullAddress = [storeStreet, storeCity].filter(Boolean).join(" • ");
+
+  const coverUrl = resolveMediaUrl(store.coverImageUrl || store.coverUrl);
+  const logoUrl = resolveMediaUrl(store.logoUrl);
 
   const isOpen = store.isOpen !== false;
   const hasRating = (store.ratingCount || 0) > 0 || (store.rating || 0) > 0;
@@ -532,11 +541,11 @@ const StoreDetail = () => {
           "store",
           "delivery",
           "order online",
-          store.city,
+          storeCity,
         ]
           .filter(Boolean)
           .join(", ")}
-        ogImage={store.coverUrl || undefined}
+        ogImage={coverUrl || logoUrl || undefined}
         ogType="website"
       />
       <div style={{ minHeight: "100vh" }}>
@@ -630,15 +639,28 @@ const StoreDetail = () => {
                     : "linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)",
                 }}
               >
-                {store.coverUrl ? (
+                {coverUrl && imgStage === "cover" ? (
                   <img
-                    src={store.coverUrl}
+                    src={coverUrl}
                     alt={storeName}
                     style={{
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
                     }}
+                    onError={() => setImgStage(logoUrl ? "logo" : "fallback")}
+                  />
+                ) : logoUrl && imgStage !== "fallback" ? (
+                  <img
+                    src={logoUrl}
+                    alt={storeName}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      padding: "clamp(16px, 3vw, 28px)",
+                    }}
+                    onError={() => setImgStage("fallback")}
                   />
                 ) : (
                   <div
@@ -683,7 +705,7 @@ const StoreDetail = () => {
                   </div>
                 )}
 
-                {/* Dark-mode: gradient border overlay (1px ring via mask trick) */}
+                {/* Dark-mode: gradient border overlay */}
                 {darkMode && (
                   <div
                     aria-hidden="true"
@@ -928,11 +950,30 @@ const StoreDetail = () => {
                   color: c.textStrong,
                   letterSpacing: isRTL ? "0" : "-0.03em",
                   lineHeight: 1.1,
-                  marginBottom: "clamp(10px, 1.5vw, 16px)",
+                  marginBottom: "clamp(10px, 1.5vw, 14px)",
                 }}
               >
                 {storeName}
               </h1>
+
+              {/* Full Address (Street • City) */}
+              {fullAddress && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "7px",
+                    fontSize: "clamp(13px, 1.5vw, 15px)",
+                    fontWeight: 500,
+                    color: c.textMuted,
+                    marginBottom: "clamp(12px, 1.8vw, 16px)",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  <MapPin size={15} color={ACCENT} style={{ flexShrink: 0 }} />
+                  <span>{fullAddress}</span>
+                </div>
+              )}
 
               {storeDescription && (
                 <p
@@ -1167,7 +1208,7 @@ const StoreDetail = () => {
                 )}
 
                 {/* Location */}
-                {store.city && (
+                {(storeCity || fullAddress) && (
                   <div
                     style={{
                       ...glassStyle,
@@ -1177,6 +1218,7 @@ const StoreDetail = () => {
                       alignItems: "center",
                       gap: "clamp(8px, 1.4vw, 12px)",
                     }}
+                    title={fullAddress || storeCity}
                   >
                     <div
                       style={{
@@ -1214,7 +1256,7 @@ const StoreDetail = () => {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {store.city}
+                        {storeCity || fullAddress}
                       </div>
                     </div>
                   </div>

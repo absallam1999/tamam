@@ -1,25 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="38 0 464 464" width="464" height="464">
   <defs>
-    <!-- Darker, Foody Green Gradient (Appetizing & Organic) -->
     <linearGradient id="foodyDarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#22c55e" />   <!-- Fresh Basil / Leaf Green -->
-      <stop offset="50%" stop-color="#15803d" />  <!-- Deep Organic Green -->
-      <stop offset="100%" stop-color="#064e3b" /> <!-- Rich Dark Farm Green -->
+      <stop offset="0%" stop-color="#22c55e" />
+      <stop offset="50%" stop-color="#15803d" />
+      <stop offset="100%" stop-color="#064e3b" />
     </linearGradient>
+
+    <filter id="minimalShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#022c22" flood-opacity="0.25" />
+    </filter>
   </defs>
 
-  <!-- 
-    Clean, shadow-free, carved-edge group.
-    Perfectly optimized for crisp rendering at tiny 16x16 / 32x32 sizes.
-  -->
+  <!-- TAMAM MAIN LOGO -->
   <g 
     fill="url(#foodyDarkGrad)" 
     stroke="url(#foodyDarkGrad)"
     stroke-width="24"
     stroke-linejoin="round"
+    filter="url(#minimalShadow)"
   >
     
-    <!-- 1. The Main Checkmark (Short Left Arm, Tall Right Arm) -->
     <path d="
       M 54.4 220 
       L 190 446 
@@ -30,7 +30,6 @@
       Z" 
     />
 
-    <!-- 2. Speed Dash Bottom (Longest) -->
     <path d="
       M 300 346 
       L 490 346 
@@ -39,7 +38,6 @@
       Z" 
     />
 
-    <!-- 3. Speed Dash Middle -->
     <path d="
       M 360 246 
       L 490 246 
@@ -48,7 +46,6 @@
       Z" 
     />
 
-    <!-- 4. Speed Dash Top (Shortest) -->
     <path d="
       M 420 146 
       L 490 146 

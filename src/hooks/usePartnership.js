@@ -1,155 +1,217 @@
 import { useState, useEffect, useCallback } from "react";
 import { apiClient } from "../lib/api-client";
 
-// ============================================
-// Hook
-// ============================================
+const STORE_ONBOARDING_ENDPOINT = "/api/onboarding/store";
+const DRIVER_ONBOARDING_ENDPOINT = "/api/onboarding/driver";
+const SUPERVISOR_ONBOARDING_ENDPOINT = "/api/onboarding/supervisor";
+const STORE_CATEGORIES_ACTIVE_ENDPOINT = "/api/browse/store-categories";
+
+function unwrapResponse(response) {
+  let current = response;
+  if (current && typeof current === "object" && "data" in current) {
+    current = current.data;
+  }
+  if (
+    current &&
+    typeof current === "object" &&
+    !Array.isArray(current) &&
+    "success" in current &&
+    "data" in current
+  ) {
+    current = current.data;
+  }
+  return current;
+}
+
+function getErrorMessage(error, fallback) {
+  return (
+    error?.response?.data?.message ||
+    error?.response?.data?.title ||
+    error?.message ||
+    fallback
+  );
+}
+
+function requiredValue(value, fieldName) {
+  if (value === undefined || value === null || String(value).trim() === "") {
+    throw new Error(`${fieldName} is required`);
+  }
+  return value;
+}
+
+// ---------------------------------------------------------------------------
+// Payload builders
+// ---------------------------------------------------------------------------
+
+function getStorePayload(formData) {
+  return {
+    ownerName: requiredValue(
+      formData.ownerName || formData.businessOwnerName,
+      "Owner name",
+    ),
+    phoneNumber: requiredValue(
+      formData.phone || formData.phoneNumber,
+      "Phone number",
+    ),
+    email: formData.email?.trim() || null,
+    storeNameAr: requiredValue(
+      formData.storeNameAr || formData.businessNameAr || formData.businessName,
+      "Arabic store name",
+    ),
+    storeNameEn: requiredValue(
+      formData.storeNameEn || formData.businessNameEn || formData.businessName,
+      "English store name",
+    ),
+    storeDescriptionAr:
+      formData.storeDescriptionAr ||
+      formData.descriptionAr ||
+      formData.description ||
+      null,
+    storeDescriptionEn:
+      formData.storeDescriptionEn ||
+      formData.descriptionEn ||
+      formData.description ||
+      null,
+    storeCategoryId: requiredValue(
+      formData.storeCategoryId || formData.categoryId,
+      "Store category",
+    ),
+    storeStreetAr:
+      formData.storeStreetAr || formData.streetAr || formData.address || null,
+    storeStreetEn:
+      formData.storeStreetEn || formData.streetEn || formData.address || null,
+    cityId: requiredValue(formData.cityId, "City"),
+    latitude: formData.latitude ?? formData.lat ?? null,
+    longitude: formData.longitude ?? formData.lng ?? null,
+    notes: formData.notes || formData.description || null,
+  };
+}
+
+function getDriverPayload(formData) {
+  return {
+    fullName: requiredValue(
+      formData.fullName || formData.ownerName || formData.name,
+      "Full name",
+    ),
+    phoneNumber: requiredValue(
+      formData.phone || formData.phoneNumber,
+      "Phone number",
+    ),
+    email: formData.email?.trim() || null,
+    vehicleType: requiredValue(formData.vehicleType, "Vehicle type"),
+    vehiclePlate: requiredValue(
+      formData.vehiclePlate || formData.plateNumber,
+      "Vehicle plate",
+    ),
+    licenseNumber: formData.licenseNumber || null,
+    licenseExpiresAt: formData.licenseExpiresAt || null,
+    cityId: requiredValue(formData.cityId, "City"),
+    area: formData.area || null,
+    attachmentUrl: formData.attachmentUrl || null,
+    attachmentUrls: Array.isArray(formData.attachmentUrls)
+      ? formData.attachmentUrls
+      : null,
+    notes:
+      formData.notes ||
+      `Courier application: ${formData.description || ""}`.trim(),
+  };
+}
+
+function getSupervisorPayload(formData) {
+  return {
+    fullName: requiredValue(
+      formData.fullName || formData.ownerName || formData.name,
+      "Full name",
+    ),
+    phoneNumber: requiredValue(
+      formData.phone || formData.phoneNumber,
+      "Phone number",
+    ),
+    email: formData.email?.trim() || null,
+    cityId: requiredValue(formData.cityId, "City"),
+    areaIds: Array.isArray(formData.areaIds) ? formData.areaIds : null,
+    notes: formData.notes || formData.description || null,
+  };
+}
 
 export function usePartnership() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [storeTypes, setStoreTypes] = useState([]);
-  const [typesLoading, setTypesLoading] = useState(false);
+  const [storeCategories, setStoreCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
 
-  /**
-   * Fetch available store types
-   * GET /api/admin/stores/types/active
-   */
-  useEffect(() => {
-    setTypesLoading(true);
-    apiClient
-      .get("/api/admin/stores/types/active")
-      .then((res) => {
-        const data = res?.data || res;
-        setStoreTypes(Array.isArray(data) ? data : []);
-      })
-      .catch(() => {
-        // Silent fail — store types are optional
-        setStoreTypes([]);
-      })
-      .finally(() => setTypesLoading(false));
+  const fetchActiveStoreCategories = useCallback(async () => {
+    setCategoriesLoading(true);
+    try {
+      const response = await apiClient.get(STORE_CATEGORIES_ACTIVE_ENDPOINT);
+      const data = unwrapResponse(response);
+      const items = Array.isArray(data) ? data : data?.items;
+      const result = Array.isArray(items) ? items : [];
+      setStoreCategories(result);
+      return result;
+    } catch (cause) {
+      setStoreCategories([]);
+      throw cause;
+    } finally {
+      setCategoriesLoading(false);
+    }
   }, []);
 
-  /**
-   * Submit a store partnership request
-   * POST /api/requests
-   */
-  const submitStoreRequest = useCallback(async (formData) => {
+  useEffect(() => {
+    fetchActiveStoreCategories().catch(() => {
+      // Store categories are optional
+    });
+  }, [fetchActiveStoreCategories]);
+
+  const submit = useCallback(async (endpoint, payload) => {
     setIsSubmitting(true);
     setError(null);
+    setSuccess(false);
     try {
-      const dto = {
-        name: formData.businessName || formData.ownerName,
-        phoneNumber: formData.phone,
-        email: formData.email || "",
-        address: formData.address || "",
-        city: formData.city || "",
-        prandName: formData.businessName || "",
-        note: formData.description || "",
-        types:
-          formData.selectedTypes?.length > 0
-            ? formData.selectedTypes
-            : formData.category
-              ? [formData.category]
-              : ["other"],
-      };
-
-      const response = await apiClient.post("/api/requests", dto);
+      const response = await apiClient.post(endpoint, payload);
+      const result = unwrapResponse(response);
       setSuccess(true);
-      return response;
-    } catch (err) {
-      setError(err.message || "Failed to submit request");
-      throw err;
+      return result;
+    } catch (cause) {
+      const message = getErrorMessage(
+        cause,
+        "Failed to submit onboarding request",
+      );
+      setError(message);
+      throw cause;
     } finally {
       setIsSubmitting(false);
     }
   }, []);
 
-  /**
-   * Submit a store request with attachment
-   * POST /api/requests/with-attachment
-   */
-  const submitStoreRequestWithAttachment = useCallback(
-    async (formData, file) => {
-      setIsSubmitting(true);
-      setError(null);
-      try {
-        const form = new FormData();
-        form.append("name", formData.businessName || formData.ownerName);
-        form.append("phoneNumber", formData.phone);
-        form.append("email", formData.email || "");
-        form.append("address", formData.address || "");
-        form.append("city", formData.city || "");
-        form.append("prandName", formData.businessName || "");
-        form.append("note", formData.description || "");
-        form.append(
-          "types",
-          formData.selectedTypes?.length > 0
-            ? formData.selectedTypes.join(",")
-            : formData.category || "other",
-        );
-        form.append("requestType", "store");
-        if (file) {
-          form.append("attachment", file);
-        }
-
-        const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
-        const response = await fetch(
-          `${API_BASE}/api/requests/with-attachment`,
-          {
-            method: "POST",
-            body: form,
-            credentials: "include",
-          },
-        );
-
-        if (!response.ok) {
-          const errData = await response.json().catch(() => null);
-          throw new Error(errData?.message || "Failed to submit request");
-        }
-
-        setSuccess(true);
-        return await response.json();
-      } catch (err) {
-        setError(err.message || "Failed to submit request");
-        throw err;
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [],
+  const submitStoreRequest = useCallback(
+    (formData) => submit(STORE_ONBOARDING_ENDPOINT, getStorePayload(formData)),
+    [submit],
   );
 
-  /**
-   * Submit a courier/driver interest request
-   */
-  const submitCourierRequest = useCallback(async (formData) => {
-    setIsSubmitting(true);
-    setError(null);
-    try {
-      const dto = {
-        name: formData.ownerName,
-        phoneNumber: formData.phone,
-        email: formData.email || "",
-        address: formData.address || "",
-        city: formData.city || "",
-        prandName: "",
-        note: `Courier application: ${formData.description || ""}. Vehicle: ${formData.vehicleType || "Not specified"}`,
-        types: ["courier"],
-        requestType: "courier",
-      };
-
-      const response = await apiClient.post("/api/requests", dto);
-      setSuccess(true);
-      return response;
-    } catch (err) {
-      setError(err.message || "Failed to submit request");
-      throw err;
-    } finally {
-      setIsSubmitting(false);
-    }
+  const submitStoreRequestWithAttachment = useCallback(() => {
+    const cause = new Error(
+      "Store onboarding attachments are not supported by the current API contract.",
+    );
+    setError(cause.message);
+    return Promise.reject(cause);
   }, []);
+
+  const submitCourierRequest = useCallback(
+    (formData) => submit(DRIVER_ONBOARDING_ENDPOINT, getDriverPayload(formData)),
+    [submit],
+  );
+
+  const submitDriverRequest = submitCourierRequest;
+
+  const submitSupervisorRequest = useCallback(
+    (formData) =>
+      submit(SUPERVISOR_ONBOARDING_ENDPOINT, getSupervisorPayload(formData)),
+    [submit],
+  );
+
+  const submitSupervisorOnboarding = submitSupervisorRequest;
 
   const reset = useCallback(() => {
     setSuccess(false);
@@ -160,11 +222,15 @@ export function usePartnership() {
     isSubmitting,
     error,
     success,
-    storeTypes,
-    typesLoading,
+    storeCategories,
+    categoriesLoading,
+    fetchActiveStoreCategories,
     submitStoreRequest,
     submitStoreRequestWithAttachment,
     submitCourierRequest,
+    submitDriverRequest,
+    submitSupervisorRequest,
+    submitSupervisorOnboarding,
     reset,
   };
 }
