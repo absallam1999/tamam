@@ -255,7 +255,7 @@ const resources = {
           rating: "4.8",
           ratingLabel: "Rating",
           earnings: "8 - 12 EGP",
-          earningsLabel: "Avg. Earnings/km",
+          earningsLabel: "Earnings/km",
         },
         featuresTitle: "Everything You Need to Succeed",
         features: {
@@ -963,7 +963,7 @@ const resources = {
           rating: "4.8",
           ratingLabel: "تقييم",
           earnings: "8-12 ج.م",
-          earningsLabel: "متوسط الدخل/كيلو",
+          earningsLabel: "/ كيلو",
         },
         featuresTitle: "كل ما تحتاجه للنجاح",
         features: {

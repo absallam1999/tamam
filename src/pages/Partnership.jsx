@@ -1633,17 +1633,23 @@ const Partnership = () => {
                           <option value="" style={optionStyle}>
                             {isRTL ? "اختر نوع المركبة" : "Select Vehicle Type"}
                           </option>
-                          <option value="Motorcycle" style={optionStyle}>
-                            {isRTL ? "دراجة نارية" : "Motorcycle"}
-                          </option>
                           <option value="Car" style={optionStyle}>
                             {isRTL ? "سيارة" : "Car"}
                           </option>
-                          <option value="Bicycle" style={optionStyle}>
-                            {isRTL ? "دراجة هوائية" : "Bicycle"}
-                          </option>
                           <option value="Van" style={optionStyle}>
                             {isRTL ? "فان" : "Van"}
+                          </option>
+                          <option value="Motorcycle" style={optionStyle}>
+                            {isRTL ? "دراجة نارية" : "Motorcycle"}
+                          </option>
+                          <option value="Scooter" style={optionStyle}>
+                            {isRTL ? "سكوتر" : "Scooter"}
+                          </option>
+                          <option value="Toktok" style={optionStyle}>
+                            {isRTL ? "توك توك" : "Toktok"}
+                          </option>
+                          <option value="Bicycle" style={optionStyle}>
+                            {isRTL ? "دراجة هوائية" : "Bicycle"}
                           </option>
                         </select>
                         <ChevronDown

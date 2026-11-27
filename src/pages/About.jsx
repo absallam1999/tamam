@@ -930,7 +930,11 @@ const About = () => {
                   flexShrink: 0,
                 }}
               >
-                <Phone size={20} color={ACCENT} />
+                <Phone
+                  size={20}
+                  color={ACCENT}
+                  style={{ transform: isRTL ? "scaleX(-1)" : undefined }}
+                />
               </div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: "12px", color: c.textMuted }}>

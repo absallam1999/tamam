@@ -371,7 +371,14 @@ const Contact = () => {
                     flexShrink: 0,
                   }}
                 >
-                  <Icon size={22} />
+                  <Icon
+                    size={22}
+                    style={
+                      card.icon === Phone && isRTL
+                        ? { transform: "scaleX(-1)" }
+                        : undefined
+                    }
+                  />
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <div
